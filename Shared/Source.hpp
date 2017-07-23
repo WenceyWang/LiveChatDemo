@@ -48,7 +48,7 @@ namespace WenceyWang {
 
 			XElement^ ToXElement()override
 			{
-				XElement^ element = Package::ToXElement();
+				XElement^ element = ClientPackage::ToXElement();
 
 				element->SetAttributeValue("Name", Name);
 				element->SetAttributeValue("Password", Password);

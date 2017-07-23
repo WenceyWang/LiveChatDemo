@@ -88,7 +88,7 @@ namespace WenceyWang {
 				void Listening()
 				{
 					LogInfo("Bind to Port {0}", Server->Port);
-					Listener = gcnew UdpClient(Server);
+					Listener = gcnew UdpClient(Server->Port);
 					LogInfo("Bind Success");
 
 					LogInfo("Search Package Types");
