@@ -22,9 +22,9 @@ namespace WenceyWang {
 	namespace LiveChatDemo
 	{
 		namespace Client {
-			
 
-			public ref class App:Application
+
+			public ref class App :Application
 			{
 				IPEndPoint^ Server;
 				Thread^ ListenThread;
@@ -35,7 +35,7 @@ namespace WenceyWang {
 				UdpClient^ Sender = gcnew UdpClient();
 
 
-				Queue<ClientPackage^>^ OutMessage;
+				Queue<ClientPackage^>^ OutMessage = gcnew Queue<ClientPackage^>();
 
 			public:
 
@@ -97,15 +97,29 @@ namespace WenceyWang {
 					LogInfo("Start Lisining");
 					while (true)
 					{
-						IPEndPoint^ address = gcnew IPEndPoint(Server->Address,Server->Port);
-						array<unsigned char>^ value = Listener->Receive(address);
-						XElement^ element = InterOp::ToXElement(value);
+						try {
 
-						TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(element->Name->ToString());
+							IPEndPoint^ address = gcnew IPEndPoint(Server->Address, Server->Port);
+							array<unsigned char>^ value = Listener->Receive(address);
+							XElement^ element = InterOp::ToXElement(value);
 
-						Type ^type = Array::Find(types, gcnew Predicate<Type^>(namePred, &TypeNamePredicate::ChooseName));
+							TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(element->Name->ToString());
 
-						ServerPackage^ package = (ServerPackage^)Activator::CreateInstance(type, address->Address, element);
+							Type ^type = Array::Find(types, gcnew Predicate<Type^>(namePred, &TypeNamePredicate::ChooseName));
+
+							if (type == nullptr)
+							{
+								throw gcnew NotSupportedException(String::Format("{0} class not found", element->Name));
+							}
+
+							ServerPackage^ package = (ServerPackage^)Activator::CreateInstance(type, address->Address, element);
+
+							Console::WriteLine(package->ToString());
+						}
+						catch (Exception^ e)
+						{
+							Console::WriteLine(e->ToString());
+						}
 
 					}
 				}
@@ -116,9 +130,13 @@ namespace WenceyWang {
 				{
 					Console::WriteLine("Enter Server Address and port:");
 
-					String ^ addressString= Console::ReadLine();
+					String ^ addressString = Console::ReadLine();
 
 					Server = InterOp::Parse(addressString);
+
+					Console::WriteLine("Login(L) or regis(R)");
+
+					String^ loginOrRegis = Console::ReadLine();
 
 					Console::WriteLine("Enter UserName");
 					String ^ name = Console::ReadLine();
@@ -126,6 +144,12 @@ namespace WenceyWang {
 					String ^ password = Console::ReadLine();
 
 					UserLoginInfo = gcnew LoginInfo(name, password);
+
+					if (loginOrRegis == "R")
+					{
+						RegisAccountPackage ^ package = gcnew RegisAccountPackage(name, password, Server, UserLoginInfo);
+						OutMessage->Enqueue(package);
+					}
 
 					LogInfo("Starting Lisiten Thread");
 					ListenThread = gcnew Thread(gcnew ThreadStart(this, &App::Listening));
@@ -170,6 +194,9 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::AddFriendPackage::Process()
 		{
 		}
+
+		void WenceyWang::LiveChatDemo::RegisAccountPackage::Process()
+		{}
 
 	}
 }

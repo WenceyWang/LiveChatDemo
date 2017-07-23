@@ -22,22 +22,26 @@ namespace WenceyWang {
 		{
 		public:
 
-			
+			Object^ ConsoleLocker = gcnew Object();
 
 			void LogInfo(String^ formart, ... array<System::Object^>^ arg)
 			{
+				lock l(ConsoleLocker);
 				Console::Write("[INFO]	");
 				Console::Write(DateTime::UtcNow);
 				Console::Write("	");
 				Console::WriteLine(formart, arg);
+				l.release();
 			}
 
 			void LogDebug(String^ formart, ... array<System::Object^>^ arg)
 			{
+				lock l(ConsoleLocker);
 				Console::Write("[DEBUG]");
 				Console::Write(DateTime::UtcNow);
 				Console::Write("	");
 				Console::WriteLine(formart, arg);
+				l.release();
 			}
 
 			virtual void Start() abstract;

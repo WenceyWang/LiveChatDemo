@@ -64,21 +64,38 @@ namespace WenceyWang {
 					LogInfo("Start Lisining");
 					while (true)
 					{
-						IPEndPoint^ address = gcnew IPEndPoint(IPAddress::Any, 3344);
-						array<unsigned char>^ value = Listener->Receive(address);
-						XElement^ element = InterOp::ToXElement(value);
+						try {
 
-						TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(element->Name->ToString());
 
-						Type ^type = Array::Find(types, gcnew Predicate<Type^>(namePred, &TypeNamePredicate::ChooseName));
+							IPEndPoint^ address = gcnew IPEndPoint(IPAddress::Any, 3344);
+							array<unsigned char>^ value = Listener->Receive(address);
+							XElement^ element = InterOp::ToXElement(value);
 
-						ClientPackage^ package = (ClientPackage^)Activator::CreateInstance(type, address->Address, element);
+							TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(element->Name->ToString());
 
-						lock l(InMessage);
+							Type ^type = Array::Find(types, gcnew Predicate<Type^>(namePred, &TypeNamePredicate::ChooseName));
 
-						InMessage->Enqueue(package);
 
-						l.release();
+							if (type == nullptr)
+							{
+								throw gcnew NotSupportedException(String::Format("{0} class not found", element->Name));
+							}
+
+							ClientPackage^ package = (ClientPackage^)Activator::CreateInstance(type, address->Address, element);
+
+							lock l(InMessage);
+
+							InMessage->Enqueue(package);
+
+							l.release();
+
+
+						}
+						catch (Exception^ e)
+						{
+							Console::WriteLine(e->ToString());
+						}
+
 					}
 				}
 
