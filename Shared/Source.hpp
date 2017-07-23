@@ -94,6 +94,41 @@ namespace WenceyWang {
 
 		};
 
+		public ref class SendGroupMessagePackage :ClientPackage
+		{
+		public:
+
+			String^ TargetGroup;
+
+			String^ Content;
+
+			SendGroupMessagePackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			{
+				TargetGroup = element->Attribute("TargetGroup")->Value;
+				Content = element->Attribute("Content")->Value;
+			}
+
+			SendGroupMessagePackage(String^ targetGroup, String^ content, IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+				TargetGroup = targetGroup;
+				Content = content;
+			}
+
+			XElement^ ToXElement()override
+			{
+				XElement^ element = ClientPackage::ToXElement();
+
+				element->SetAttributeValue("TargetGroup", TargetGroup);
+				element->SetAttributeValue("Content", Content);
+
+				return element;
+			}
+
+			void Process() override;
+
+		};
+
+
 		public ref class GetMessagesPackage :ClientPackage
 		{
 		public:
@@ -120,12 +155,23 @@ namespace WenceyWang {
 
 			AddFriendPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
-				
+				TargetUser = element->Attribute("TargetUser")->Value;
+
+
 			}
 
 			AddFriendPackage(String^ targetUser, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				TargetUser = targetUser;
+			}
+
+			XElement^ ToXElement()override
+			{
+				XElement^ element = ClientPackage::ToXElement();
+
+				element->SetAttributeValue("TargetUser", TargetUser);
+
+				return element;
 			}
 
 			void Process() override;
@@ -224,7 +270,7 @@ namespace WenceyWang {
 
 			String^ Content;
 
-			ReturnFriendsPackage(int port) :ServerPackage(port)
+			ReturnFriendsPackage(List<UserInfo^>^ users, IPAddress ^ target) :ServerPackage(target)
 			{
 
 			}
@@ -265,7 +311,37 @@ namespace WenceyWang {
 			}
 		};
 
+		public ref class BlockPeoplePackage:ClientPackage
+		{
+		public:
 
+			String^ TargetUser;
+
+			BlockPeoplePackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			{
+
+				TargetUser = element->Attribute("TargetUser")->Value;
+
+			}
+
+
+			XElement^ ToXElement()override
+			{
+				XElement^ element = ClientPackage::ToXElement();
+
+				element->SetAttributeValue("TargetUser", TargetUser);
+
+				return element;
+			}
+
+			BlockPeoplePackage(String^ targetUser, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+				TargetUser = targetUser;
+			}
+
+			void Process() override;
+
+		};
 
 		public ref class MessagePackage :ServerPackage
 		{
@@ -275,18 +351,13 @@ namespace WenceyWang {
 
 			String^ Content;
 
-			MessagePackage(int port) :ServerPackage(port)
-			{
-
-			}
-
 			MessagePackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
 			{
 				SourceUser = element->Attribute("SourceUser")->Value;
 				Content = element->Attribute("Content")->Value;
 			}
 
-			MessagePackage(String^ sourceUser, String^ content, int port) :ServerPackage(port)
+			MessagePackage(String^ sourceUser, String^ content) :ServerPackage()
 			{
 				SourceUser = sourceUser;
 				Content = content;
@@ -307,6 +378,105 @@ namespace WenceyWang {
 
 		};
 
+		public ref class CreateGroupPackage:ClientPackage
+		{
+		public:
+			String^ Name;
+
+			CreateGroupPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			{
+				Name = element->Attribute("Name")->Value;
+			}
+
+			CreateGroupPackage(String^ name,  IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+				Name = name;
+			}
+
+			XElement^ ToXElement()override
+			{
+				XElement^ element = ClientPackage::ToXElement();
+
+				element->SetAttributeValue("Name", Name);
+
+				return element;
+			}
+
+			void Process() override;
+
+
+		};
+
+		public ref class GroupAddUserPackage :ClientPackage
+		{
+		public:
+
+			String^ TargetUser;
+
+			String^ TargetGroup;
+
+			GroupAddUserPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			{
+				TargetUser = element->Attribute("TargetUser")->Value;
+				TargetGroup = element->Attribute("TargetGroup")->Value;
+			}
+
+			GroupAddUserPackage(String^ targetUser, String^ targetGroup, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+				TargetUser = targetUser;
+				TargetGroup = targetGroup;
+			}
+
+			XElement^ ToXElement()override
+			{
+				XElement^ element = ClientPackage::ToXElement();
+
+				element->SetAttributeValue("TargetUser", TargetUser);
+				element->SetAttributeValue("TargetGroup", TargetGroup);
+
+				return element;
+			}
+
+			void Process() override;
+
+		};
+
+
+		public ref class GroupRemoveUserPackage :ClientPackage
+		{
+		public:
+
+			String^ TargetUser;
+
+			String^ TargetGroup;
+
+			GroupRemoveUserPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			{
+				TargetUser = element->Attribute("TargetUser")->Value;
+				TargetGroup = element->Attribute("TargetGroup")->Value;
+			}
+
+			GroupRemoveUserPackage(String^ targetUser, String^ targetGroup, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+				TargetUser = targetUser;
+				TargetGroup = targetGroup;
+			}
+
+			XElement^ ToXElement()override
+			{
+				XElement^ element = ClientPackage::ToXElement();
+
+				element->SetAttributeValue("TargetUser", TargetUser);
+				element->SetAttributeValue("TargetGroup", TargetGroup);
+
+				return element;
+			}
+
+			void Process() override;
+
+		};
+
+
 		public ref class TypeNamePredicate
 		{
 		public:
@@ -323,6 +493,23 @@ namespace WenceyWang {
 				return type->Name == this->Name;
 			}
 
+		};
+
+		public ref class GroupNamePredicate
+		{
+		public:
+
+			String^ Name;
+
+			GroupNamePredicate(String^ name)
+			{
+				Name = name;
+			}
+
+			bool ChooseName(Group^ group)
+			{
+				return group->Name == this->Name;
+			}
 		};
 
 

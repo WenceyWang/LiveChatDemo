@@ -37,6 +37,8 @@ namespace WenceyWang {
 
 
 
+
+
 			public ref class App :Application
 			{
 			public:
@@ -52,7 +54,7 @@ namespace WenceyWang {
 				UdpClient^ Sender = gcnew UdpClient();
 
 				int CheckMessageInterval = 1000;
-			
+
 				static App^ Current;
 
 
@@ -146,6 +148,30 @@ namespace WenceyWang {
 				}
 
 
+				static array<String^>^ SplitArguments(String^ commandLine)
+				{
+					array<wchar_t>^ parmChars = commandLine->ToCharArray();
+					bool inSingleQuote = false;
+					bool inDoubleQuote = false;
+					for (int index = 0; index < parmChars->Length; index++)
+					{
+						if (parmChars[index] == '"' && !inSingleQuote)
+						{
+							inDoubleQuote = !inDoubleQuote;
+							parmChars[index] = '\n';
+						}
+						if (parmChars[index] == '\'' && !inDoubleQuote)
+						{
+							inSingleQuote = !inSingleQuote;
+							parmChars[index] = '\n';
+						}
+						if (!inSingleQuote && !inDoubleQuote && parmChars[index] == ' ')
+							parmChars[index] = '\n';
+					}
+					return (gcnew String(parmChars))->Split((gcnew String("\n"))->ToCharArray(), StringSplitOptions::RemoveEmptyEntries);
+				}
+
+
 				void ExcuteCommand()
 				{
 					LogInfo("Starting Commanding");
@@ -157,8 +183,19 @@ namespace WenceyWang {
 					{
 						try
 						{
-							Console::Write(">");
-							array<String^>^ currentCommand= Console::ReadLine()->Split((gcnew String(" "))->ToCharArray());
+							/*{
+								lock l(ConsoleLocker);
+								int cursorLeft = Console::CursorLeft;
+								int cursorTop = Console::CursorTop;
+								Console::CursorLeft = 0;
+								Console::CursorTop = Console::WindowHeight - 1;
+								Console::Write(">");
+								Console::CursorLeft = cursorLeft;
+								Console::CursorTop = cursorTop;
+								l.release();
+							}*/
+
+							array<String^>^ currentCommand = SplitArguments(Console::ReadLine());
 
 							TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(currentCommand[0]);
 
@@ -180,12 +217,13 @@ namespace WenceyWang {
 							LogWarn(e->ToString());
 						}
 					}
-					
+
 				}
 
 				void Start() override
-
 				{
+
+
 					Console::WriteLine("Enter Server Address and port:");
 
 					String ^ addressString = Console::ReadLine();
@@ -244,7 +282,7 @@ namespace WenceyWang {
 				}
 			};
 
-			public ref class GetFriends:Command
+			public ref class GetFriends :Command
 			{
 			public:
 				void Excute(array<String^>^ args)override
@@ -316,6 +354,15 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::RegisAccountPackage::Process()
 		{}
 
+		void WenceyWang::LiveChatDemo::BlockPeoplePackage::Process()
+		{
+		}
+
+		void WenceyWang::LiveChatDemo::SendGroupMessagePackage::Process(){}
+
+		void WenceyWang::LiveChatDemo::CreateGroupPackage::Process() {}
+		void WenceyWang::LiveChatDemo::GroupAddUserPackage::Process() {}
+		void WenceyWang::LiveChatDemo::GroupRemoveUserPackage::Process() {}
 
 	}
 }

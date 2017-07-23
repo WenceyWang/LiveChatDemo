@@ -28,6 +28,8 @@ namespace WenceyWang {
 
 				List<User^>^ Users = gcnew List<User^>();
 
+				List<Group^>^ Groups = gcnew List<Group^>;
+
 				Queue<ClientPackage^>^ InMessage = gcnew Queue<ClientPackage^>();
 
 				Queue<ServerPackage^>^ OutMessage = gcnew Queue<ServerPackage^>();
@@ -213,6 +215,17 @@ namespace WenceyWang {
 			return user;
 		}
 
+		Group^ GetGroup(String^ name)
+		{
+			GroupNamePredicate^ pred = gcnew GroupNamePredicate(name);
+			Group^group = Server::App::Current->Groups->Find(gcnew Predicate<Group^>(pred, &GroupNamePredicate::ChooseName));
+			if (group == nullptr)
+			{
+				throw gcnew InvalidOperationException(String::Format("Group {0} Not Found", name));
+			}
+			return group;
+		}
+
 		User^ GetUserWithIndex(Guid guid, int index)
 		{
 			UserGuidPredicate^ pred = gcnew UserGuidPredicate(guid);
@@ -239,9 +252,13 @@ namespace WenceyWang {
 			ClientPackage::Process();
 			User^sender = GetSendUser(this);
 			User^receiver = GetUser(this->TargetUser);
-			lock l(receiver);
-			receiver->Messages->Enqueue(gcnew MessagePackage(sender->Name, this->Content, (Server::App::Current)->Port));
-			l.release();
+			if (!receiver->Blockeds->Contains(*sender->Guid))
+			{
+				lock l(receiver);
+				receiver->Messages->Enqueue(gcnew MessagePackage(sender->Name, this->Content));
+				l.release();
+
+			}
 		}
 
 		void WenceyWang::LiveChatDemo::GetMessagesPackage::Process()
@@ -270,7 +287,7 @@ namespace WenceyWang {
 		{
 			ClientPackage::Process();
 			User^user = GetSendUser(this);
-			ReturnUsersPackage^ package = gcnew ReturnUsersPackage(Enumerable::ToList(Enumerable::Select(Enumerable::Select(user->Friends, gcnew Func<Guid, int, User^>(GetUserWithIndex)), gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
+			ReturnFriendsPackage^ package = gcnew ReturnFriendsPackage(Enumerable::ToList(Enumerable::Select(Enumerable::Select(user->Friends, gcnew Func<Guid, int, User^>(GetUserWithIndex)), gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
 			(Server::App::Current)->SendPackage(package);
 
 
@@ -290,6 +307,79 @@ namespace WenceyWang {
 			Server::App::Current->Users->Add(gcnew User(Guid::NewGuid(), this->Name, this->Password));
 			Server::App::Current->LogInfo("User {0} regised", this->Name);
 		}
+
+		void WenceyWang::LiveChatDemo::BlockPeoplePackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSendUser(this);
+			User^blocked = GetUser(this->TargetUser);
+			user->Blockeds->Add(*blocked->Guid);
+		}
+
+		void WenceyWang::LiveChatDemo::GroupRemoveUserPackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSendUser(this);
+			Group^ group = GetGroup(this->TargetGroup);
+			User^ toRemove = GetUser(this->TargetUser);
+			if (group->Owner == user)
+			{
+				lock l(group);
+
+				group->Users->Remove(toRemove);
+				if (group->Users->Contains(group->Owner))
+				{
+					Server::App::Current->Groups->Remove(group);
+				}
+				l.release();
+
+			}
+
+
+		}
+
+		void WenceyWang::LiveChatDemo::GroupAddUserPackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSendUser(this);
+			Group^ group = GetGroup(this->TargetGroup);
+			User^ toAdd = GetUser(this->TargetUser);
+			if (group->Owner == user && !toAdd->Blockeds->Contains(*user->Guid))
+			{
+				lock l(group);
+				group->Users->Add(toAdd);
+				l.release();
+			}
+
+		}
+
+		void WenceyWang::LiveChatDemo::CreateGroupPackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSendUser(this);
+			Group^ newGroup = gcnew Group(this->Name, user);
+
+			Server::App::Current->Groups->Add(newGroup);
+
+		}
+
+		void WenceyWang::LiveChatDemo::SendGroupMessagePackage::Process()
+		{
+			ClientPackage::Process();
+			User^sender = GetSendUser(this);
+			Group^ group = GetGroup(this->TargetGroup);
+			if (group->Users->Contains(sender))
+			{
+				for each (User^ receiver in group->Users)
+				{
+					lock l(receiver);
+					receiver->Messages->Enqueue(gcnew MessagePackage(sender->Name, this->Content));
+					l.release();
+
+				}
+			}
+		}
+
 	}
 }
 

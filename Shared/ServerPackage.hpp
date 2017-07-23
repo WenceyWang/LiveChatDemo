@@ -41,7 +41,7 @@ namespace WenceyWang {
 
 			}
 
-			ServerPackage(int port) :Package(IPAddress::Loopback,nullptr, nullptr)
+			ServerPackage() :Package(IPAddress::Loopback,nullptr, nullptr)
 			{
 
 			}

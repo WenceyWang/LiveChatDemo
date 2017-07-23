@@ -68,6 +68,8 @@ namespace WenceyWang {
 
 		};
 
+		
+
 		public ref class User sealed
 		{
 
@@ -82,6 +84,8 @@ namespace WenceyWang {
 			static SHA512Managed^ Hash = gcnew SHA512Managed();
 
 			List<System::Guid>^ Friends = gcnew List<System::Guid>();
+
+			List<System::Guid>^ Blockeds = gcnew List<System::Guid>();
 
 			DateTime^LastSeen;
 
@@ -115,6 +119,11 @@ namespace WenceyWang {
 					Friends->Add(System::Guid::Parse(var->Value));
 				}
 
+				for each (XElement^ var in element->Element("Blockeds")->Elements())
+				{
+					Blockeds->Add(System::Guid::Parse(var->Value));
+				}
+
 			}
 
 			XElement^ ToXElement()
@@ -136,6 +145,18 @@ namespace WenceyWang {
 
 				element->Add(friendsElement);
 
+				XElement^ blockedElement = gcnew XElement("Blockeds");
+
+				for each (System::Guid _blocked in Blockeds)
+				{
+					XElement^ current = gcnew XElement("Blocked");
+					current->Add(_blocked);
+					blockedElement->Add(current);
+				}
+
+				element->Add(blockedElement);
+
+
 				return element;
 			}
 
@@ -153,7 +174,28 @@ namespace WenceyWang {
 					this->PasswordHashed ==passwordHash;
 			}
 
+			
 
 		};
+
+		public ref class Group
+		{
+		public:
+
+			List<User^>^ Users=gcnew List<User^>;
+
+			User^ Owner;		
+
+			String^Name;
+
+			Group(String ^ name, User^ owner)
+			{
+				Name = name;
+				Owner = owner;
+				Users->Add(Owner);
+			}
+
+		};
+
 	}
 }
