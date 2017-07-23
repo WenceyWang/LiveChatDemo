@@ -81,7 +81,7 @@ namespace WenceyWang {
 								throw gcnew NotSupportedException(String::Format("{0} class not found", element->Name));
 							}
 
-							ClientPackage^ package = (ClientPackage^)Activator::CreateInstance(type, address->Address, element);
+							ClientPackage^ package = (ClientPackage^)Activator::CreateInstance(type, address, element);
 
 							lock l(InMessage);
 
@@ -136,7 +136,7 @@ namespace WenceyWang {
 							l.release();
 							XElement^ element = toSent->ToXElement();
 							array<unsigned char>^ bytes = InterOp::ToByte(element->ToString());
-							Sender->Send(bytes, bytes->Length, toSent->Target);
+							Sender->Send(bytes, bytes->Length,gcnew IPEndPoint( toSent->Target,Port));
 						}
 						else
 						{

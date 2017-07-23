@@ -56,7 +56,7 @@ namespace WenceyWang {
 				{
 					while (true)
 					{
-						GetMessagesPackage ^ package = gcnew GetMessagesPackage(Server, this->UserLoginInfo);
+						GetMessagesPackage ^ package = gcnew GetMessagesPackage(Server->Address, this->UserLoginInfo);
 						this->SendPackage(package);
 						Thread::Sleep(1000);
 					}
@@ -75,7 +75,7 @@ namespace WenceyWang {
 							l.release();
 							XElement^ element = toSent->ToXElement();
 							array<unsigned char>^ bytes = InterOp::ToByte(element->ToString());
-							Sender->Send(bytes, bytes->Length, toSent->Target);
+							Sender->Send(bytes, bytes->Length, Server);
 						}
 						else
 						{
@@ -147,7 +147,7 @@ namespace WenceyWang {
 
 					if (loginOrRegis == "R")
 					{
-						RegisAccountPackage ^ package = gcnew RegisAccountPackage(name, password, Server, UserLoginInfo);
+						RegisAccountPackage ^ package = gcnew RegisAccountPackage(name, password, Server->Address, UserLoginInfo);
 						OutMessage->Enqueue(package);
 					}
 

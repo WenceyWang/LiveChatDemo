@@ -31,17 +31,17 @@ namespace WenceyWang {
 			}
 
 
-			ServerPackage(IPEndPoint^source, XElement^ element) :Package(source, gcnew IPEndPoint(IPAddress::Loopback, source->Port), element)
+			ServerPackage(IPAddress^source, XElement^ element) :Package(source, IPAddress::Loopback, element)
 			{
 
 			}
 
-			ServerPackage(IPEndPoint^ target) :Package(gcnew IPEndPoint(IPAddress::Loopback, target->Port), target, nullptr)
+			ServerPackage(IPAddress^ target) :Package(IPAddress::Loopback, target, nullptr)
 			{
 
 			}
 
-			ServerPackage(int port) :Package(gcnew IPEndPoint(IPAddress::Loopback,port ),nullptr, nullptr)
+			ServerPackage(int port) :Package(IPAddress::Loopback,nullptr, nullptr)
 			{
 
 			}

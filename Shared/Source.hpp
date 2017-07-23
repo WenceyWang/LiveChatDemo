@@ -34,13 +34,13 @@ namespace WenceyWang {
 
 			String^ Password;
 
-			RegisAccountPackage(IPEndPoint^ source, XElement^ element) :ClientPackage(source, element)
+			RegisAccountPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
 				Name = element->Attribute("Name")->Value;
 				Password = element->Attribute("Password")->Value;
 			}
 
-			RegisAccountPackage(String^ name, String^ password, IPEndPoint^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			RegisAccountPackage(String^ name, String^ password, IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				Name = name;
 				Password = password;
@@ -68,13 +68,13 @@ namespace WenceyWang {
 
 			String^ Content;
 
-			SendMessagePackage(IPEndPoint^ source, XElement^ element) :ClientPackage(source, element)
+			SendMessagePackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
 				TargetUser = System::Guid::Parse(element->Attribute("TargetUser")->Value);
 				Content = element->Attribute("Content")->Value;
 			}
 
-			SendMessagePackage(Guid^ targetUser, String^ content, IPEndPoint^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			SendMessagePackage(Guid^ targetUser, String^ content, IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				TargetUser = targetUser;
 				Content = content;
@@ -98,12 +98,12 @@ namespace WenceyWang {
 		{
 		public:
 
-			GetMessagesPackage(IPEndPoint^ source, XElement^ element) :ClientPackage(source, element)
+			GetMessagesPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
 
 			}
 
-			GetMessagesPackage(IPEndPoint^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			GetMessagesPackage(IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 
 			}
@@ -118,12 +118,12 @@ namespace WenceyWang {
 
 			Guid^ TargetUser;
 
-			AddFriendPackage(IPEndPoint^ source, XElement^ element) :ClientPackage(source, element)
+			AddFriendPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
 
 			}
 
-			AddFriendPackage(Guid targetUser, IPEndPoint^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			AddFriendPackage(Guid targetUser, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				TargetUser = targetUser;
 			}
@@ -135,12 +135,12 @@ namespace WenceyWang {
 		public ref class GetUsersPackage :ClientPackage
 		{
 		public:
-			GetUsersPackage(IPEndPoint^ source, XElement^ element) :ClientPackage(source, element)
+			GetUsersPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
 
 			}
 
-			GetUsersPackage(IPEndPoint^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			GetUsersPackage(IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 
 			}
@@ -152,12 +152,12 @@ namespace WenceyWang {
 		public ref class GetFriendsPackage :ClientPackage
 		{
 		public:
-			GetFriendsPackage(IPEndPoint^ source, XElement^ element) :ClientPackage(source, element)
+			GetFriendsPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
 
 			}
 
-			GetFriendsPackage(IPEndPoint^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			GetFriendsPackage(IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 
 			}
@@ -174,12 +174,12 @@ namespace WenceyWang {
 		public:
 			List<UserInfo^>^ Users;
 
-			ReturnUsersPackage(List<UserInfo^>^ users, IPEndPoint ^ target) :ServerPackage(target)
+			ReturnUsersPackage(List<UserInfo^>^ users, IPAddress ^ target) :ServerPackage(target)
 			{
 				Users = users;
 			}
 
-			ReturnUsersPackage(IPEndPoint^ source, XElement^ element) :ServerPackage(source, element)
+			ReturnUsersPackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
 			{
 				Users = gcnew List<UserInfo^>();
 
@@ -217,7 +217,7 @@ namespace WenceyWang {
 
 			}
 
-			ReturnFriendsPackage(IPEndPoint^ source, XElement^ element) :ServerPackage(source, element)
+			ReturnFriendsPackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
 			{
 				Users = gcnew List<UserInfo^>();
 
@@ -256,7 +256,7 @@ namespace WenceyWang {
 
 			}
 
-			MessagePackage(IPEndPoint^ source, XElement^ element) :ServerPackage(source, element)
+			MessagePackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
 			{
 				SourceUser = System::Guid::Parse(element->Attribute("TargetUser")->Value);
 				Content = element->Attribute("Content")->Value;
@@ -286,7 +286,7 @@ namespace WenceyWang {
 
 			TypeNamePredicate(String^ name)
 			{
-				Name == name;
+				Name = name;
 			}
 
 			bool ChooseName(Type^ type)
@@ -306,7 +306,7 @@ namespace WenceyWang {
 
 			UserNamePredicate(String^ name)
 			{
-				Name == name;
+				Name = name;
 			}
 
 			bool ChooseName(User^ user)

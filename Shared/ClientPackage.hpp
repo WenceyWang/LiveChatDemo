@@ -35,12 +35,12 @@ namespace WenceyWang {
 
 			LoginInfo^ CurrentLoginInfo;
 
-			ClientPackage(IPEndPoint^ source, XElement^ element) :Package(source,gcnew IPEndPoint(IPAddress::Loopback, source->Port), element)
+			ClientPackage(IPAddress^ source, XElement^ element) :Package(source,IPAddress::Loopback, element)
 			{
 				this->CurrentLoginInfo = gcnew LoginInfo(element->Element("LoginInfo"));
 			}
 
-			ClientPackage(IPEndPoint^ target, LoginInfo^ loginInfo) :Package(( gcnew IPEndPoint(IPAddress::Loopback, target->Port)), target, nullptr)
+			ClientPackage(IPAddress^ target, LoginInfo^ loginInfo) :Package(IPAddress::Loopback, target, nullptr)
 			{
 				CurrentLoginInfo = loginInfo;
 			}
