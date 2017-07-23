@@ -65,7 +65,7 @@ namespace WenceyWang {
 			String ^ Name;
 
 			//Todo: Salt the Hash
-			array<unsigned char>^ PasswordHashed;
+			String^ PasswordHashed;
 
 			static SHA512Managed^ Hash = gcnew SHA512Managed();
 
@@ -79,7 +79,7 @@ namespace WenceyWang {
 			{
 				this->Guid = guid;
 				this->Name = name;
-				this->PasswordHashed = Hash->ComputeHash(InterOp::ToByte(password));
+				this->PasswordHashed = Convert::ToBase64String(Hash->ComputeHash(InterOp::ToByte(password)));
 			}
 
 			bool IsOnline()
@@ -96,7 +96,7 @@ namespace WenceyWang {
 			{
 				this->Guid = System::Guid::Parse(element->Attribute("Guid")->Value);
 				this->Name = element->Attribute("Name")->Value;
-				this->PasswordHashed = Convert::FromBase64String(element->Attribute("Password")->Value);
+				this->PasswordHashed = (element->Attribute("Password")->Value);
 
 				for each (XElement^ var in element->Element("Friends")->Elements())
 				{
@@ -111,7 +111,7 @@ namespace WenceyWang {
 
 				element->SetAttributeValue("Guid", this->Guid->ToString());
 				element->SetAttributeValue("Name", this->Name);
-				element->SetAttributeValue("Password", Convert::ToBase64String(this->PasswordHashed));
+				element->SetAttributeValue("Password",this->PasswordHashed);
 
 				XElement^ friendsElement = gcnew XElement("Friends");
 
@@ -135,9 +135,10 @@ namespace WenceyWang {
 
 			bool CheckLoginInfo(LoginInfo^ loginInfo)
 			{
+				String^ passwordHash = Convert::ToBase64String(Hash->ComputeHash(InterOp::ToByte(loginInfo->Password)));
 				return Name == loginInfo->Name
 					&&
-					Convert::ToBase64String(this->PasswordHashed) == Convert::ToBase64String(Hash->ComputeHash(InterOp::ToByte(loginInfo->Password)));
+					this->PasswordHashed ==passwordHash;
 			}
 
 

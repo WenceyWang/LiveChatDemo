@@ -26,7 +26,7 @@ namespace WenceyWang {
 			LoginInfo(XElement^ element)
 			{
 				this->Name = element->Attribute("Name")->Value;
-				this->Password = element->Attribute("Name")->Value;
+				this->Password = element->Attribute("Password")->Value;
 			}
 
 			LoginInfo(String^ name, String^ password)

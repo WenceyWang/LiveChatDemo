@@ -26,7 +26,7 @@ namespace WenceyWang {
 
 				UdpClient^ Sender = gcnew UdpClient();
 
-				List<User^>^ Users;
+				List<User^>^ Users = gcnew List<User^>();
 
 				Queue<ClientPackage^>^ InMessage = gcnew Queue<ClientPackage^>();
 
@@ -106,19 +106,25 @@ namespace WenceyWang {
 
 					while (true)
 					{
-						lock l(InMessage);
-						if (InMessage->Count > 0)
-						{
-							ClientPackage^ toProcess = InMessage->Dequeue();
-							l.release();
-							toProcess->Process();
-						}
-						else
-						{
-							l.release();
-							Thread::Sleep(500);
-						}
+						try {
 
+							lock l(InMessage);
+							if (InMessage->Count > 0)
+							{
+								ClientPackage^ toProcess = InMessage->Dequeue();
+								l.release();
+								toProcess->Process();
+							}
+							else
+							{
+								l.release();
+								Thread::Sleep(500);
+							}
+						}
+						catch (Exception^ e)
+						{
+							Console::WriteLine(e->ToString());
+						}
 					}
 				}
 
@@ -136,7 +142,7 @@ namespace WenceyWang {
 							l.release();
 							XElement^ element = toSent->ToXElement();
 							array<unsigned char>^ bytes = InterOp::ToByte(element->ToString());
-							Sender->Send(bytes, bytes->Length,gcnew IPEndPoint( toSent->Target,Port));
+							Sender->Send(bytes, bytes->Length, gcnew IPEndPoint(toSent->Target, Port));
 						}
 						else
 						{
@@ -171,7 +177,7 @@ namespace WenceyWang {
 					LogInfo("Send Thread Started");
 
 					LogInfo("Starting Process Thread");
-					ProcessThread = gcnew Thread(gcnew ThreadStart(this, &App::Sending));
+					ProcessThread = gcnew Thread(gcnew ThreadStart(this, &App::Process));
 					ProcessThread->Start();
 					LogInfo("Process Thread Started");
 
@@ -184,6 +190,10 @@ namespace WenceyWang {
 		{
 			UserNamePredicate^ pred = gcnew UserNamePredicate(package->CurrentLoginInfo->Name);
 			User^user = Server::App::Current->Users->Find(gcnew Predicate<User^>(pred, &UserNamePredicate::ChooseName));
+			if (user == nullptr)
+			{
+				throw gcnew InvalidOperationException(String::Format("User {0} Not Found", package->CurrentLoginInfo->Name));
+			}
 			return user;
 		}
 
@@ -205,6 +215,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::ClientPackage::Process()
 		{
 			User^user = GetSendUser(this);
+			
 			if (user->CheckLoginInfo(this->CurrentLoginInfo))
 			{
 			}
