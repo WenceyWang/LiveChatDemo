@@ -1,6 +1,6 @@
 ﻿// Client.cpp : main project file.
 
-#include "Source.cpp"
+#include "Source.hpp"
 #include "stdafx.h"
 
 using namespace System;
@@ -45,7 +45,7 @@ namespace WenceyWang {
 					LogInfo("Bind Success");
 
 					LogInfo("Search Package Types");
-					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>(this, &App::ChooseServerPackageType));
+					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>(ServerPackage::ChooseServerPackageType));
 
 					LogInfo("Start Lisining");
 					while (true)

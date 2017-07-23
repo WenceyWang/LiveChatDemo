@@ -1,6 +1,6 @@
 // ConsoleApplication1.cpp : main project file.
 
-#include "Source.cpp"
+#include "Source.hpp"
 #include "stdafx.h"
 
 using namespace System;
@@ -57,7 +57,7 @@ namespace WenceyWang {
 					LogInfo("Bind Success");
 
 					LogInfo("Search Package Types");
-					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>(this, &App::ChooseClientPackageType));
+					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>( ClientPackage::ChooseClientPackageType));
 
 					LogInfo("Start Lisining");
 					while (true)

@@ -14,6 +14,13 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Source.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Application.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ClientPackage.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)InterOp.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LoginInfo.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Package.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ServerPackage.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Source.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)User.hpp" />
   </ItemGroup>
 </Project>
