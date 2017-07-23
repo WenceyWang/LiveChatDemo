@@ -139,10 +139,38 @@ namespace WenceyWang {
 
 					CheckNewMessageThread = gcnew Thread(gcnew ThreadStart(this, &App::CheckNewMessage));
 					CheckNewMessageThread->Start();
+
+
+
 				}
 
 			};
 		}
+
+		void WenceyWang::LiveChatDemo::ClientPackage::Process()
+		{
+		}
+
+		void WenceyWang::LiveChatDemo::SendMessagePackage::Process()
+		{
+		}
+
+		void WenceyWang::LiveChatDemo::GetMessagesPackage::Process()
+		{
+		}
+
+		void WenceyWang::LiveChatDemo::GetUsersPackage::Process()
+		{
+		}
+
+		void WenceyWang::LiveChatDemo::GetFriendsPackage::Process()
+		{
+		}
+
+		void WenceyWang::LiveChatDemo::AddFriendPackage::Process()
+		{
+		}
+
 	}
 }
 

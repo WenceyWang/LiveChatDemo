@@ -177,7 +177,7 @@ namespace WenceyWang {
 			return user;
 		}
 
-		User^ GetUserWithIndex(Guid guid,int index)
+		User^ GetUserWithIndex(Guid guid, int index)
 		{
 			UserGuidPredicate^ pred = gcnew UserGuidPredicate(guid);
 			User^user = Server::App::Current->Users->Find(gcnew Predicate<User^>(pred, &UserGuidPredicate::ChooseGuid));
@@ -187,10 +187,10 @@ namespace WenceyWang {
 
 		void WenceyWang::LiveChatDemo::ClientPackage::Process()
 		{
-			User^user= GetSendUser(this);
+			User^user = GetSendUser(this);
 			if (user->CheckLoginInfo(this->CurrentLoginInfo))
 			{
-			} 
+			}
 			else
 			{
 				throw gcnew InvalidOperationException();
@@ -213,7 +213,7 @@ namespace WenceyWang {
 			User^user = GetSendUser(this);
 			lock l(user);
 			user->LastSeen = DateTime::UtcNow;
-			while (user->Messages->Count>0)
+			while (user->Messages->Count > 0)
 			{
 				ServerPackage^ package = user->Messages->Dequeue();
 				package->Target = this->Source;
@@ -225,7 +225,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::GetUsersPackage::Process()
 		{
 			ClientPackage::Process();
-			ReturnUsersPackage^ package= gcnew ReturnUsersPackage(Enumerable::ToList(Enumerable::Select( (Server::App::Current->Users),gcnew Func<User^,int,UserInfo^>(User::ToUserInfo))), this->Source);
+			ReturnUsersPackage^ package = gcnew ReturnUsersPackage(Enumerable::ToList(Enumerable::Select((Server::App::Current->Users), gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
 			(Server::App::Current)->SendPackage(package);
 		}
 
@@ -247,7 +247,11 @@ namespace WenceyWang {
 			user->Friends->Add(*Friend->Guid);
 		}
 
-		
+		void WenceyWang::LiveChatDemo::RegisAccountPackage::Process()
+		{
+			//No logininfo check
+			Server::App::Current->Users->Add(gcnew User(Guid::NewGuid(), this->Name, this->Password));
+		}
 	}
 }
 

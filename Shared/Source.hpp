@@ -26,6 +26,40 @@ namespace WenceyWang {
 	namespace LiveChatDemo
 	{
 
+		public ref class RegisAccountPackage :ClientPackage
+		{
+		public:
+
+			String^ Name;
+
+			String^ Password;
+
+			RegisAccountPackage(IPEndPoint^ source, XElement^ element) :ClientPackage(source, element)
+			{
+				Name = element->Attribute("Name")->Value;
+				Password = element->Attribute("Password")->Value;
+			}
+
+			RegisAccountPackage(String^ name, String^ password, IPEndPoint^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+				Name = name;
+				Password = password;
+			}
+
+			XElement^ ToXElement()override
+			{
+				XElement^ element = Package::ToXElement();
+
+				element->SetAttributeValue("Name", Name);
+				element->SetAttributeValue("Password", Password);
+
+				return element;
+			}
+
+			void Process() override;
+
+		};
+
 		public ref class SendMessagePackage :ClientPackage
 		{
 		public:
@@ -50,6 +84,8 @@ namespace WenceyWang {
 			{
 				XElement^ element = Package::ToXElement();
 
+				element->SetAttributeValue("TargetUser", TargetUser);
+				element->SetAttributeValue("Content", Content);
 
 				return element;
 			}
@@ -87,7 +123,7 @@ namespace WenceyWang {
 
 			}
 
-			AddFriendPackage(Guid targetUser,IPEndPoint^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			AddFriendPackage(Guid targetUser, IPEndPoint^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				TargetUser = targetUser;
 			}
@@ -95,7 +131,6 @@ namespace WenceyWang {
 			void Process() override;
 
 		};
-
 
 		public ref class GetUsersPackage :ClientPackage
 		{
@@ -107,7 +142,7 @@ namespace WenceyWang {
 
 			GetUsersPackage(IPEndPoint^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
-				
+
 			}
 
 			void Process() override;
@@ -166,7 +201,6 @@ namespace WenceyWang {
 				}
 				return element;
 			}
-
 
 		};
 

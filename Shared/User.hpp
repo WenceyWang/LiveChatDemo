@@ -75,7 +75,7 @@ namespace WenceyWang {
 
 			Queue<ServerPackage^>^  Messages = gcnew Queue<ServerPackage^>();//Todo:序列化這個
 
-			User(System::Guid^ guid, String^ name, String^ password)
+			User(System::Guid guid, String^ name, String^ password)
 			{
 				this->Guid = guid;
 				this->Name = name;
