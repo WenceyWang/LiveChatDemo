@@ -27,19 +27,9 @@ namespace WenceyWang {
 			static bool ChooseServerPackageType(Type^ type)
 			{
 				Type ^t = ServerPackage::typeid;
-				return t->IsAssignableFrom(type) && (!t->IsAbstract);
+				return t->IsAssignableFrom(type) && (!type->IsAbstract);
 			}
 
-
-
-			virtual XElement^ ToXElement()
-			{
-				Type^ type = this->GetType();
-
-				XElement^ result = gcnew XElement((type->Name));
-
-				return result;
-			}
 
 			ServerPackage(IPAddress^source, XElement^ element) :Package(source, IPAddress::Loopback, element)
 			{

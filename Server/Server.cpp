@@ -57,7 +57,9 @@ namespace WenceyWang {
 					LogInfo("Bind Success");
 
 					LogInfo("Search Package Types");
-					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>( ClientPackage::ChooseClientPackageType));
+
+					array<Type^>^ allTypes = this->GetType()->Assembly->GetTypes();
+					array<Type^>^ types = Array::FindAll(allTypes, gcnew Predicate<Type^>( ClientPackage::ChooseClientPackageType));
 
 					LogInfo("Start Lisining");
 					while (true)
@@ -162,6 +164,7 @@ namespace WenceyWang {
 		}
 	}
 }
+
 int main(array<System::String ^> ^args)
 {
 	WenceyWang::LiveChatDemo::Server::App^ App = gcnew WenceyWang::LiveChatDemo::Server::App();

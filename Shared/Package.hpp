@@ -32,6 +32,15 @@ namespace WenceyWang {
 				Element = element;
 			}
 
+			virtual XElement^ ToXElement()
+			{
+				Type^ type = this->GetType();
+
+				XElement^ result = gcnew XElement((type->Name));
+
+				return result;
+			}
+
 		protected:
 
 			XElement^ Element;

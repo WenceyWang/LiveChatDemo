@@ -31,7 +31,7 @@ namespace WenceyWang {
 			static bool ChooseClientPackageType(Type^ type)
 			{
 				Type ^t = ClientPackage::typeid;
-				return t->IsAssignableFrom(type) && (!t->IsAbstract);
+				return t->IsAssignableFrom(type) && (!type->IsAbstract);
 			}
 
 

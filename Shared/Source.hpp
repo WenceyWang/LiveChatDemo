@@ -27,16 +27,29 @@ namespace WenceyWang {
 		{
 		public:
 
-			Guid^ Target;
+			Guid^ TargetUser;
 
 			String^ Content;
 
 			SendMessagePackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
-				Target = System::Guid::Parse(element->Attribute("Target")->Value);
+				TargetUser = System::Guid::Parse(element->Attribute("TargetUser")->Value);
 				Content = element->Attribute("Content")->Value;
 			}
 
+			SendMessagePackage(Guid^ targetUser, String^ content,IPAddress^target,LoginInfo^ loginInfo):ClientPackage(target,loginInfo)
+			{
+				TargetUser = targetUser;
+				Content = content;
+			}
+
+			XElement^ ToXElement ()override
+			{
+				XElement^ element = Package::ToXElement();
+
+				
+				return element;
+			}
 
 		};
 
