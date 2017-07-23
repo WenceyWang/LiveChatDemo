@@ -45,6 +45,15 @@ namespace WenceyWang {
 				CurrentLoginInfo = loginInfo;
 			}
 
+			XElement^ ToXElement() override
+			{
+				XElement^ element = Package::ToXElement();
+
+				element->Add(CurrentLoginInfo->ToXElement());
+
+				return element;
+			}
+
 			virtual void Process();
 
 		};

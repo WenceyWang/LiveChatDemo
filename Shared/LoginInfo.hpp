@@ -35,6 +35,19 @@ namespace WenceyWang {
 				Password = password;
 			}
 
+			XElement^ ToXElement() override
+			{
+				Type^ type = this->GetType();
+
+				XElement^ element = gcnew XElement((type->Name));
+
+				element->SetAttributeValue("Name", Name);
+				element->SetAttributeValue("Password", Password);
+
+				return element;
+
+			}
+
 		};
 	}
 }

@@ -67,8 +67,8 @@ namespace WenceyWang {
 						try {
 
 
-							IPEndPoint^ address = gcnew IPEndPoint(IPAddress::Any, 3344);
-							array<unsigned char>^ value = Listener->Receive(address);
+							IPEndPoint^ endPoint = gcnew IPEndPoint(IPAddress::Any, 3344);
+							array<unsigned char>^ value = Listener->Receive(endPoint);
 							XElement^ element = InterOp::ToXElement(value);
 
 							TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(element->Name->ToString());
@@ -81,7 +81,7 @@ namespace WenceyWang {
 								throw gcnew NotSupportedException(String::Format("{0} class not found", element->Name));
 							}
 
-							ClientPackage^ package = (ClientPackage^)Activator::CreateInstance(type, address, element);
+							ClientPackage^ package = (ClientPackage^)Activator::CreateInstance(type, endPoint->Address, element);
 
 							lock l(InMessage);
 
