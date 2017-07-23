@@ -64,17 +64,17 @@ namespace WenceyWang {
 		{
 		public:
 
-			Guid^ TargetUser;
+			String^ TargetUser;
 
 			String^ Content;
 
 			SendMessagePackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
-				TargetUser = System::Guid::Parse(element->Attribute("TargetUser")->Value);
+				TargetUser = element->Attribute("TargetUser")->Value;
 				Content = element->Attribute("Content")->Value;
 			}
 
-			SendMessagePackage(Guid^ targetUser, String^ content, IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			SendMessagePackage(String^ targetUser, String^ content, IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				TargetUser = targetUser;
 				Content = content;
@@ -82,7 +82,7 @@ namespace WenceyWang {
 
 			XElement^ ToXElement()override
 			{
-				XElement^ element = Package::ToXElement();
+				XElement^ element = ClientPackage::ToXElement();
 
 				element->SetAttributeValue("TargetUser", TargetUser);
 				element->SetAttributeValue("Content", Content);
@@ -116,14 +116,14 @@ namespace WenceyWang {
 		{
 		public:
 
-			Guid^ TargetUser;
+			String^ TargetUser;
 
 			AddFriendPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
-
+				
 			}
 
-			AddFriendPackage(Guid targetUser, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			AddFriendPackage(String^ targetUser, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				TargetUser = targetUser;
 			}

@@ -44,6 +44,28 @@ namespace WenceyWang {
 				l.release();
 			}
 
+			void LogWarn(String^ formart, ... array<System::Object^>^ arg)
+			{
+				lock l(ConsoleLocker);
+				Console::BackgroundColor = ConsoleColor::DarkRed;				
+				Console::ForegroundColor = ConsoleColor::White;
+
+				Console::Write("[WARNING]");
+				
+				Console::ResetColor();
+
+				Console::ForegroundColor = ConsoleColor::White;
+				
+				Console::Write(DateTime::UtcNow);
+				Console::Write("	");
+				Console::WriteLine(formart, arg);
+				
+				Console::ResetColor();
+
+				l.release();
+
+			}
+
 			virtual void Start() abstract;
 
 

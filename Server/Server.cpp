@@ -93,7 +93,7 @@ namespace WenceyWang {
 						}
 						catch (Exception^ e)
 						{
-							Console::WriteLine(e->ToString());
+							LogWarn(e->ToString());
 						}
 
 					}
@@ -123,7 +123,7 @@ namespace WenceyWang {
 						}
 						catch (Exception^ e)
 						{
-							Console::WriteLine(e->ToString());
+							LogWarn(e->ToString());
 						}
 					}
 				}
@@ -186,16 +186,23 @@ namespace WenceyWang {
 			};
 		}
 
-		User^ GetSendUser(ClientPackage^ package)
+		User^ GetUser(String^ name)
 		{
-			UserNamePredicate^ pred = gcnew UserNamePredicate(package->CurrentLoginInfo->Name);
+			UserNamePredicate^ pred = gcnew UserNamePredicate(name);
 			User^user = Server::App::Current->Users->Find(gcnew Predicate<User^>(pred, &UserNamePredicate::ChooseName));
 			if (user == nullptr)
 			{
-				throw gcnew InvalidOperationException(String::Format("User {0} Not Found", package->CurrentLoginInfo->Name));
+				throw gcnew InvalidOperationException(String::Format("User {0} Not Found", name));
 			}
 			return user;
 		}
+
+
+		User^ GetSendUser(ClientPackage^ package)
+		{
+			return GetUser(package->CurrentLoginInfo->Name);
+		}
+
 
 		User^ GetUser(Guid^ guid)
 		{

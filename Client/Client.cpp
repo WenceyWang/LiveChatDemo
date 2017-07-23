@@ -23,25 +23,46 @@ namespace WenceyWang {
 	{
 		namespace Client {
 
+			public ref class Command abstract
+			{
+			public:
+				void virtual Excute(array<System::String ^> ^args) abstract;
+
+				static bool ChooseCommandType(Type^ type)
+				{
+					Type ^t = Command::typeid;
+					return t->IsAssignableFrom(type) && (!type->IsAbstract);
+				}
+			};
+
+
 
 			public ref class App :Application
 			{
+			public:
+
+
 				IPEndPoint^ Server;
 				Thread^ ListenThread;
 				Thread^ SendThread;
 				Thread^CheckNewMessageThread;
+				Thread^CommandThread;
 				UdpClient^ Listener;
 				LoginInfo^ UserLoginInfo;
 				UdpClient^ Sender = gcnew UdpClient();
 
+				int CheckMessageInterval = 1000;
+			
+				static App^ Current;
+
 
 				Queue<ClientPackage^>^ OutMessage = gcnew Queue<ClientPackage^>();
 
-			public:
+
 
 				App()
 				{
-
+					Current = this;
 				}
 
 				void SendPackage(ClientPackage ^package)
@@ -58,7 +79,7 @@ namespace WenceyWang {
 					{
 						GetMessagesPackage ^ package = gcnew GetMessagesPackage(Server->Address, this->UserLoginInfo);
 						this->SendPackage(package);
-						Thread::Sleep(1000);
+						Thread::Sleep(CheckMessageInterval);
 					}
 				}
 
@@ -118,12 +139,49 @@ namespace WenceyWang {
 						}
 						catch (Exception^ e)
 						{
-							Console::WriteLine(e->ToString());
+							LogWarn(e->ToString());
 						}
 
 					}
 				}
 
+
+				void ExcuteCommand()
+				{
+					LogInfo("Starting Commanding");
+
+					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>(Command::ChooseCommandType));
+
+
+					while (true)
+					{
+						try
+						{
+							Console::Write(">");
+							array<String^>^ currentCommand= Console::ReadLine()->Split((gcnew String(" "))->ToCharArray());
+
+							TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(currentCommand[0]);
+
+							Type ^type = Array::Find(types, gcnew Predicate<Type^>(namePred, &TypeNamePredicate::ChooseName));
+
+							if (type == nullptr)
+							{
+								throw gcnew NotSupportedException(String::Format("{0} command not found", currentCommand[0]));
+							}
+
+							Command^ package = (Command^)Activator::CreateInstance(type);
+
+							package->Excute(currentCommand);
+
+
+						}
+						catch (Exception^ e)
+						{
+							LogWarn(e->ToString());
+						}
+					}
+					
+				}
 
 				void Start() override
 
@@ -134,7 +192,7 @@ namespace WenceyWang {
 
 					Server = InterOp::Parse(addressString);
 
-					Console::WriteLine("Login(L) or regis(R)");
+					Console::WriteLine("Login(L) or Regis(R)");
 
 					String^ loginOrRegis = Console::ReadLine();
 
@@ -161,14 +219,53 @@ namespace WenceyWang {
 					SendThread->Start();
 					LogInfo("Sending thread Started");
 
+					LogInfo("Starting CheckNewMessage Thread");
 					CheckNewMessageThread = gcnew Thread(gcnew ThreadStart(this, &App::CheckNewMessage));
 					CheckNewMessageThread->Start();
+					LogInfo("CheckNewMessage thread started");
 
-
+					LogInfo("Starting Command Thread");
+					CommandThread = gcnew Thread(gcnew ThreadStart(this, &App::ExcuteCommand));
+					CommandThread->Start();
+					LogInfo("Command Thread Started");
 
 				}
 
 			};
+
+
+			public ref class SendMessage :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					SendMessagePackage^ package = gcnew SendMessagePackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+			};
+
+			public ref class GetUsers :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					GetUsersPackage^ package = gcnew GetUsersPackage(App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+			};
+
+			public ref class SetCheckMessageInterval :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					App::Current->CheckMessageInterval = Convert::ToInt32(args[1]);
+
+				}
+
+			};
+
+
 		}
 
 		void WenceyWang::LiveChatDemo::ClientPackage::Process()
@@ -197,6 +294,7 @@ namespace WenceyWang {
 
 		void WenceyWang::LiveChatDemo::RegisAccountPackage::Process()
 		{}
+
 
 	}
 }
