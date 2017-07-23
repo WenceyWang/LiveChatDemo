@@ -1,4 +1,5 @@
 #pragma once
+
 #include <msclr\lock.h>
 
 using namespace System;
@@ -24,8 +25,6 @@ namespace WenceyWang {
 		public ref class ClientPackage abstract :Package
 		{
 
-
-
 		public:
 
 			static bool ChooseClientPackageType(Type^ type)
@@ -34,24 +33,19 @@ namespace WenceyWang {
 				return t->IsAssignableFrom(type) && (!type->IsAbstract);
 			}
 
-
-
 			LoginInfo^ CurrentLoginInfo;
 
-			ClientPackage(IPAddress^ source, XElement^ element) :Package(source, IPAddress::Loopback, element)
+			ClientPackage(IPEndPoint^ source, XElement^ element) :Package(source,gcnew IPEndPoint(IPAddress::Loopback, source->Port), element)
 			{
 				this->CurrentLoginInfo = gcnew LoginInfo(element->Element("LoginInfo"));
 			}
 
-			ClientPackage(IPAddress^ target, LoginInfo^ loginInfo) :Package(IPAddress::Loopback, target, nullptr)
+			ClientPackage(IPEndPoint^ target, LoginInfo^ loginInfo) :Package(( gcnew IPEndPoint(IPAddress::Loopback, target->Port)), target, nullptr)
 			{
 				CurrentLoginInfo = loginInfo;
 			}
 
-			virtual void  Process()
-			{
-
-			}
+			virtual void Process();
 
 		};
 	}

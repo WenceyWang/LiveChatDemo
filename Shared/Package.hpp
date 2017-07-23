@@ -22,10 +22,10 @@ namespace WenceyWang {
 		{
 		public:
 
-			IPAddress^ Source;
-			IPAddress^ Target;
+			IPEndPoint^ Source;
+			IPEndPoint^ Target;
 
-			Package(IPAddress^ source, IPAddress^ target, XElement^ element)
+			Package(IPEndPoint^ source, IPEndPoint^ target, XElement^ element)
 			{
 				Source = source;
 				Target = target;

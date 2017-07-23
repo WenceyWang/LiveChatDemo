@@ -10,7 +10,7 @@ using namespace System::Net;
 using namespace System::Xml::Linq;
 using namespace System::Linq;
 using namespace System::Text;
-using namespace  System::Security::Cryptography;
+using namespace System::Security::Cryptography;
 using namespace msclr;
 
 #include"Package.hpp"
@@ -31,15 +31,22 @@ namespace WenceyWang {
 			}
 
 
-			ServerPackage(IPAddress^source, XElement^ element) :Package(source, IPAddress::Loopback, element)
+			ServerPackage(IPEndPoint^source, XElement^ element) :Package(source, gcnew IPEndPoint(IPAddress::Loopback, source->Port), element)
 			{
 
 			}
 
-			ServerPackage(IPAddress^ target) :Package(IPAddress::Loopback, target, nullptr)
+			ServerPackage(IPEndPoint^ target) :Package(gcnew IPEndPoint(IPAddress::Loopback, target->Port), target, nullptr)
 			{
 
 			}
+
+			ServerPackage(int port) :Package(gcnew IPEndPoint(IPAddress::Loopback,port ),nullptr, nullptr)
+			{
+
+			}
+
+
 
 		};
 	}

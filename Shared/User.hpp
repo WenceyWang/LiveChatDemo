@@ -13,14 +13,49 @@ using namespace System::Text;
 using namespace  System::Security::Cryptography;
 using namespace msclr;
 
-#include"InterOp.hpp"
 #include"ServerPackage.hpp"
 #include"LoginInfo.hpp"
+#include"InterOp.hpp"
 
 namespace WenceyWang {
 
 	namespace LiveChatDemo
 	{
+		public ref class UserInfo sealed
+		{
+		public:
+
+			Guid ^ Guid;
+			String ^ Name;
+			bool IsOnline;
+
+			XElement^ ToXElement()
+			{
+				XElement^ element = gcnew XElement("UserInfo");
+
+				element->SetAttributeValue("Guid", this->Guid->ToString());
+				element->SetAttributeValue("Name", this->Name);
+				element->SetAttributeValue("IsOnline", this->IsOnline);
+
+				return element;
+			}
+
+			UserInfo(System::Guid^ guid, String^ name,bool isOnline)
+			{
+				this->Guid = guid;
+				this->Name = name;
+				this->IsOnline = isOnline;
+			}
+
+			UserInfo(XElement^ element)
+			{
+				this->Guid = System::Guid::Parse(element->Attribute("Guid")->Value);
+				this->Name = element->Attribute("Name")->Value;
+				this->IsOnline =Convert::ToBoolean( element->Attribute("IsOnline")->Value);
+			}
+
+		};
+
 		public ref class User sealed
 		{
 
@@ -36,6 +71,8 @@ namespace WenceyWang {
 
 			List<System::Guid>^ Friends = gcnew List<System::Guid>();
 
+			DateTime^LastSeen;
+
 			Queue<ServerPackage^>^  Messages = gcnew Queue<ServerPackage^>();//Todo:序列化這個
 
 			User(System::Guid^ guid, String^ name, String^ password)
@@ -43,6 +80,11 @@ namespace WenceyWang {
 				this->Guid = guid;
 				this->Name = name;
 				this->PasswordHashed = Hash->ComputeHash(InterOp::ToByte(password));
+			}
+
+			bool IsOnline()
+			{
+				return DateTime::operator-(DateTime::UtcNow , *LastSeen) < TimeSpan::FromSeconds(30);
 			}
 
 			void AddFriend(System::Guid guid)
@@ -63,7 +105,7 @@ namespace WenceyWang {
 
 			}
 
-			XElement^ ToXelement()
+			XElement^ ToXElement()
 			{
 				XElement^ element = gcnew XElement("User");
 
@@ -83,7 +125,12 @@ namespace WenceyWang {
 				element->Add(friendsElement);
 
 				return element;
+			}
 
+			static UserInfo^ ToUserInfo(User^ user,int index)
+			{
+				UserInfo^ result = gcnew UserInfo(user->Guid, user->Name ,user->IsOnline());
+				return result;
 			}
 
 			bool CheckLoginInfo(LoginInfo^ loginInfo)

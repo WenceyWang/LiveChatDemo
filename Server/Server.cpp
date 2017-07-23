@@ -1,31 +1,23 @@
 // ConsoleApplication1.cpp : main project file.
 
+#pragma once
+
 #include "Source.hpp"
 #include "stdafx.h"
-
-using namespace System;
-using namespace System::Collections::Generic;
-using namespace System::Threading;
-using namespace System::Threading::Tasks;
-using namespace System::Net::Sockets;
-using namespace System::Net;
-using namespace System::Xml::Linq;
-using namespace System::Linq;
-using namespace System::Text;
-using namespace  System::Security::Cryptography;
-using namespace msclr;
 
 namespace WenceyWang {
 
 	namespace LiveChatDemo
 	{
+
+
 		namespace Server {
 
-
-			public ref class App:Application
+			public ref class App :Application
 			{
-				UdpClient^ Listener;
+			public:
 
+				UdpClient^ Listener;
 				Thread^ ListenThread;
 				Thread^ SendThread;
 				Thread^ ProcessThread;
@@ -49,6 +41,14 @@ namespace WenceyWang {
 				}
 
 
+				void SendPackage(ServerPackage ^package)
+				{
+					lock l(OutMessage);
+					OutMessage->Enqueue(package);
+					l.release();
+
+				}
+
 				void Listen()
 				{
 
@@ -59,7 +59,7 @@ namespace WenceyWang {
 					LogInfo("Search Package Types");
 
 					array<Type^>^ allTypes = this->GetType()->Assembly->GetTypes();
-					array<Type^>^ types = Array::FindAll(allTypes, gcnew Predicate<Type^>( ClientPackage::ChooseClientPackageType));
+					array<Type^>^ types = Array::FindAll(allTypes, gcnew Predicate<Type^>(ClientPackage::ChooseClientPackageType));
 
 					LogInfo("Start Lisining");
 					while (true)
@@ -72,7 +72,7 @@ namespace WenceyWang {
 
 						Type ^type = Array::Find(types, gcnew Predicate<Type^>(namePred, &TypeNamePredicate::ChooseName));
 
-						ClientPackage^ package= (ClientPackage^)Activator::CreateInstance(type, address->Address, element);
+						ClientPackage^ package = (ClientPackage^)Activator::CreateInstance(type, address->Address, element);
 
 						lock l(InMessage);
 
@@ -101,11 +101,11 @@ namespace WenceyWang {
 							l.release();
 							Thread::Sleep(500);
 						}
-						
+
 					}
 				}
 
-				void Send()
+				void Sending()
 				{
 
 					LogInfo("Start Sending");
@@ -119,23 +119,23 @@ namespace WenceyWang {
 							l.release();
 							XElement^ element = toSent->ToXElement();
 							array<unsigned char>^ bytes = InterOp::ToByte(element->ToString());
-							Sender->Send(bytes, bytes->Length, gcnew IPEndPoint(toSent->Target, Port));
+							Sender->Send(bytes, bytes->Length, toSent->Target);
 						}
 						else
 						{
 							l.release();
 							Thread::Sleep(500);
 						}
-						
+
 					}
 				}
 
 
-			public:
+				static App ^Current;
 
 				App()
 				{
-
+					Current = this;
 				}
 
 				void Start() override
@@ -149,12 +149,12 @@ namespace WenceyWang {
 					LogInfo("Lisiten Thread Started");
 
 					LogInfo("Starting Send Thread");
-					SendThread = gcnew Thread(gcnew ThreadStart(this, &App::Send));
+					SendThread = gcnew Thread(gcnew ThreadStart(this, &App::Sending));
 					SendThread->Start();
 					LogInfo("Send Thread Started");
 
 					LogInfo("Starting Process Thread");
-					ProcessThread = gcnew Thread(gcnew ThreadStart(this, &App::Send));
+					ProcessThread = gcnew Thread(gcnew ThreadStart(this, &App::Sending));
 					ProcessThread->Start();
 					LogInfo("Process Thread Started");
 
@@ -162,8 +162,95 @@ namespace WenceyWang {
 
 			};
 		}
+
+		User^ GetSendUser(ClientPackage^ package)
+		{
+			UserNamePredicate^ pred = gcnew UserNamePredicate(package->CurrentLoginInfo->Name);
+			User^user = Server::App::Current->Users->Find(gcnew Predicate<User^>(pred, &UserNamePredicate::ChooseName));
+			return user;
+		}
+
+		User^ GetUser(Guid^ guid)
+		{
+			UserGuidPredicate^ pred = gcnew UserGuidPredicate(guid);
+			User^user = Server::App::Current->Users->Find(gcnew Predicate<User^>(pred, &UserGuidPredicate::ChooseGuid));
+			return user;
+		}
+
+		User^ GetUserWithIndex(Guid guid,int index)
+		{
+			UserGuidPredicate^ pred = gcnew UserGuidPredicate(guid);
+			User^user = Server::App::Current->Users->Find(gcnew Predicate<User^>(pred, &UserGuidPredicate::ChooseGuid));
+			return user;
+		}
+
+
+		void WenceyWang::LiveChatDemo::ClientPackage::Process()
+		{
+			User^user= GetSendUser(this);
+			if (user->CheckLoginInfo(this->CurrentLoginInfo))
+			{
+			} 
+			else
+			{
+				throw gcnew InvalidOperationException();
+			}
+		}
+
+		void WenceyWang::LiveChatDemo::SendMessagePackage::Process()
+		{
+			ClientPackage::Process();
+			User^sender = GetSendUser(this);
+			User^receiver = GetUser(this->TargetUser);
+			lock l(receiver);
+			receiver->Messages->Enqueue(gcnew MessagePackage(sender->Guid, this->Content, (Server::App::Current)->Port));
+			l.release();
+		}
+
+		void WenceyWang::LiveChatDemo::GetMessagesPackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSendUser(this);
+			lock l(user);
+			user->LastSeen = DateTime::UtcNow;
+			while (user->Messages->Count>0)
+			{
+				ServerPackage^ package = user->Messages->Dequeue();
+				package->Target = this->Source;
+				(Server::App::Current)->SendPackage(package);
+			}
+			l.release();
+		}
+
+		void WenceyWang::LiveChatDemo::GetUsersPackage::Process()
+		{
+			ClientPackage::Process();
+			ReturnUsersPackage^ package= gcnew ReturnUsersPackage(Enumerable::ToList(Enumerable::Select( (Server::App::Current->Users),gcnew Func<User^,int,UserInfo^>(User::ToUserInfo))), this->Source);
+			(Server::App::Current)->SendPackage(package);
+		}
+
+		void WenceyWang::LiveChatDemo::GetFriendsPackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSendUser(this);
+			ReturnUsersPackage^ package = gcnew ReturnUsersPackage(Enumerable::ToList(Enumerable::Select(Enumerable::Select(user->Friends, gcnew Func<Guid, int, User^>(GetUserWithIndex)), gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
+			(Server::App::Current)->SendPackage(package);
+
+
+		}
+
+		void WenceyWang::LiveChatDemo::AddFriendPackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSendUser(this);
+			User^Friend = GetUser(this->TargetUser);
+			user->Friends->Add(*Friend->Guid);
+		}
+
+		
 	}
 }
+
 
 int main(array<System::String ^> ^args)
 {

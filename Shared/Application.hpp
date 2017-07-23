@@ -13,6 +13,7 @@ using namespace System::Text;
 using namespace  System::Security::Cryptography;
 using namespace msclr;
 
+
 namespace WenceyWang {
 
 	namespace LiveChatDemo
@@ -21,6 +22,7 @@ namespace WenceyWang {
 		{
 		public:
 
+			
 
 			void LogInfo(String^ formart, ... array<System::Object^>^ arg)
 			{

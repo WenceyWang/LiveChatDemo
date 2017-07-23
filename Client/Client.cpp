@@ -28,8 +28,14 @@ namespace WenceyWang {
 			{
 				IPEndPoint^ Server;
 				Thread^ ListenThread;
+				Thread^ SendThread;
+				Thread^CheckNewMessageThread;
 				UdpClient^ Listener;
 				LoginInfo^ UserLoginInfo;
+				UdpClient^ Sender = gcnew UdpClient();
+
+
+				Queue<ClientPackage^>^ OutMessage;
 
 			public:
 
@@ -38,7 +44,48 @@ namespace WenceyWang {
 
 				}
 
-				void GetMessage()
+				void SendPackage(ClientPackage ^package)
+				{
+					lock l(OutMessage);
+					OutMessage->Enqueue(package);
+					l.release();
+
+				}
+
+				void CheckNewMessage()
+				{
+					while (true)
+					{
+						GetMessagesPackage ^ package = gcnew GetMessagesPackage(Server, this->UserLoginInfo);
+						this->SendPackage(package);
+						Thread::Sleep(1000);
+					}
+				}
+
+				void Sending()
+				{
+					LogInfo("Start Sending");
+
+					while (true)
+					{
+						lock l(OutMessage);
+						if (OutMessage->Count > 0)
+						{
+							ClientPackage^ toSent = OutMessage->Dequeue();
+							l.release();
+							XElement^ element = toSent->ToXElement();
+							array<unsigned char>^ bytes = InterOp::ToByte(element->ToString());
+							Sender->Send(bytes, bytes->Length, toSent->Target);
+						}
+						else
+						{
+							l.release();
+							Thread::Sleep(500);
+						}
+					}
+				}
+
+				void Listening()
 				{
 					LogInfo("Bind to Port {0}", Server->Port);
 					Listener = gcnew UdpClient(Server);
@@ -64,7 +111,6 @@ namespace WenceyWang {
 				}
 
 
-
 				void Start() override
 
 				{
@@ -82,11 +128,17 @@ namespace WenceyWang {
 					UserLoginInfo = gcnew LoginInfo(name, password);
 
 					LogInfo("Starting Lisiten Thread");
-					ListenThread = gcnew Thread(gcnew ThreadStart(this, &App::GetMessage));
+					ListenThread = gcnew Thread(gcnew ThreadStart(this, &App::Listening));
 					ListenThread->Start();
 					LogInfo("Lisiten Thread Started");
 
+					LogInfo("Starting Sending Thread");
+					SendThread = gcnew Thread(gcnew ThreadStart(this, &App::Sending));
+					SendThread->Start();
+					LogInfo("Sending thread Started");
 
+					CheckNewMessageThread = gcnew Thread(gcnew ThreadStart(this, &App::CheckNewMessage));
+					CheckNewMessageThread->Start();
 				}
 
 			};
