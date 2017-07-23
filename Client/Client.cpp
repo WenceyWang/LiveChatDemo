@@ -234,6 +234,27 @@ namespace WenceyWang {
 			};
 
 
+			public ref class AddFriend :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					AddFriendPackage^ package = gcnew AddFriendPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+			};
+
+			public ref class GetFriends:Command
+			{
+			public:
+				void Excute(array<String^>^ args)override
+				{
+					GetFriendsPackage^ package = gcnew GetFriendsPackage(App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+
+			};
+
 			public ref class SendMessage :Command
 			{
 			public:

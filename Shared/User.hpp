@@ -54,6 +54,18 @@ namespace WenceyWang {
 				this->IsOnline =Convert::ToBoolean( element->Attribute("IsOnline")->Value);
 			}
 
+			String ^ ToString () override
+			{
+				if (IsOnline)
+				{
+					return String::Format("{0}	Online", Name);
+				}
+				else
+				{
+					return String::Format("{0}	Offline", Name);
+				}
+			}
+
 		};
 
 		public ref class User sealed

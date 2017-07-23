@@ -71,6 +71,8 @@ namespace WenceyWang {
 							array<unsigned char>^ value = Listener->Receive(endPoint);
 							XElement^ element = InterOp::ToXElement(value);
 
+							LogDebug("Receive package {0} from {1}", element, endPoint->Address);
+
 							TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(element->Name->ToString());
 
 							Type ^type = Array::Find(types, gcnew Predicate<Type^>(namePred, &TypeNamePredicate::ChooseName));
@@ -222,7 +224,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::ClientPackage::Process()
 		{
 			User^user = GetSendUser(this);
-			
+
 			if (user->CheckLoginInfo(this->CurrentLoginInfo))
 			{
 			}
@@ -238,7 +240,7 @@ namespace WenceyWang {
 			User^sender = GetSendUser(this);
 			User^receiver = GetUser(this->TargetUser);
 			lock l(receiver);
-			receiver->Messages->Enqueue(gcnew MessagePackage(sender->Guid, this->Content, (Server::App::Current)->Port));
+			receiver->Messages->Enqueue(gcnew MessagePackage(sender->Name, this->Content, (Server::App::Current)->Port));
 			l.release();
 		}
 
@@ -286,6 +288,7 @@ namespace WenceyWang {
 		{
 			//No logininfo check
 			Server::App::Current->Users->Add(gcnew User(Guid::NewGuid(), this->Name, this->Password));
+			Server::App::Current->LogInfo("User {0} regised", this->Name);
 		}
 	}
 }

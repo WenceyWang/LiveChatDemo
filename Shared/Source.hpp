@@ -179,6 +179,18 @@ namespace WenceyWang {
 				Users = users;
 			}
 
+			String^ ToString()override
+			{
+				StringBuilder^ builder = gcnew StringBuilder();
+
+				for each (UserInfo^ user in Users)
+				{
+					builder->AppendLine(user->ToString());
+				}
+
+				return builder->ToString();
+			}
+
 			ReturnUsersPackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
 			{
 				Users = gcnew List<UserInfo^>();
@@ -228,6 +240,18 @@ namespace WenceyWang {
 
 			}
 
+			String^ ToString()override
+			{
+				StringBuilder^ builder = gcnew StringBuilder();
+
+				for each (UserInfo^ user in Users)
+				{
+					builder->AppendLine(user->ToString());
+				}
+
+				return builder->ToString();
+			}
+
 			XElement^ ToXElement() override
 			{
 				XElement^ element = ServerPackage::ToXElement();
@@ -247,7 +271,7 @@ namespace WenceyWang {
 		{
 		public:
 
-			Guid^ SourceUser;
+			String^ SourceUser;
 
 			String^ Content;
 
@@ -258,21 +282,26 @@ namespace WenceyWang {
 
 			MessagePackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
 			{
-				SourceUser = System::Guid::Parse(element->Attribute("TargetUser")->Value);
+				SourceUser = element->Attribute("SourceUser")->Value;
 				Content = element->Attribute("Content")->Value;
 			}
 
-			MessagePackage(Guid^ sourceUser, String^ content, int port) :ServerPackage(port)
+			MessagePackage(String^ sourceUser, String^ content, int port) :ServerPackage(port)
 			{
 				SourceUser = sourceUser;
 				Content = content;
 			}
 
+			String^ ToString()override
+			{
+				return String::Format("{0}	{1}:{2}",DateTime::UtcNow, SourceUser, Content);
+			}
+
 			XElement^ ToXElement()override
 			{
-				XElement^ element = Package::ToXElement();
-
-
+				XElement^ element = ServerPackage::ToXElement();
+				element->SetAttributeValue("SourceUser", SourceUser);
+				element->SetAttributeValue("Content", Content);
 				return element;
 			}
 
