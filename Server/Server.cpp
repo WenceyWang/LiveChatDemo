@@ -26,6 +26,22 @@ namespace WenceyWang {
 
 			};
 
+			public ref class UserNotFoundException :Exception
+			{
+			public:
+				String ^Name;
+
+				UserNotFoundException(String^ name)
+				{
+					Name = name;
+				}
+
+				virtual String^ ToString() override
+				{
+					return String::Format("Group {0} Not Found", Name);
+				}
+
+			};
 
 			public ref class App :Application
 			{
@@ -98,7 +114,7 @@ namespace WenceyWang {
 							array<unsigned char>^ value = Listener->Receive(endPoint);
 							XElement^ element = InterOp::ToXElement(value);
 
-							LogDebug("Receive package {0} from {1}", element, endPoint->Address);
+							//LogDebug("Receive package {0} from {1}", element, endPoint->Address);
 
 							TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(element->Name->ToString());
 
@@ -119,10 +135,6 @@ namespace WenceyWang {
 							l.release();
 
 
-						}
-						catch (UserLoginFailedException ^e)
-						{
-							LogInfo("{0} Log {1} Failed", e->Sender, e->Name);
 						}
 						catch (Exception^ e)
 						{
@@ -153,6 +165,10 @@ namespace WenceyWang {
 								l.release();
 								Thread::Sleep(500);
 							}
+						}
+						catch (UserLoginFailedException ^e)
+						{
+							LogInfo("{0} Log {1} Failed", e->Sender, e->Name);
 						}
 						catch (Exception^ e)
 						{
@@ -221,7 +237,7 @@ namespace WenceyWang {
 			User^user = Server::App::Current->Users->Find(gcnew Predicate<User^>(pred, &UserNamePredicate::ChooseName));
 			if (user == nullptr)
 			{
-				throw gcnew InvalidOperationException(String::Format("User {0} Not Found", name));
+				throw gcnew Server::UserNotFoundException(name);
 			}
 			return user;
 		}
@@ -245,7 +261,7 @@ namespace WenceyWang {
 			Group^group = Server::App::Current->Groups->Find(gcnew Predicate<Group^>(pred, &GroupNamePredicate::ChooseName));
 			if (group == nullptr)
 			{
-				throw gcnew InvalidOperationException(String::Format("Group {0} Not Found", name));
+				throw gcnew Server::UserNotFoundException(name);
 			}
 			return group;
 		}
@@ -260,8 +276,15 @@ namespace WenceyWang {
 
 		void WenceyWang::LiveChatDemo::ClientPackage::Process()
 		{
-			User^user = GetSender(this);
-
+			User^user;
+			try
+			{
+				user = GetSender(this);
+			}
+			catch (Server::UserNotFoundException ^)
+			{
+				throw gcnew Server::UserLoginFailedException(this->CurrentLoginInfo->Name, this->Source);
+			}
 			if (user->CheckLoginInfo(this->CurrentLoginInfo))
 			{
 			}
