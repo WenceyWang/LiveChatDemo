@@ -259,7 +259,7 @@ namespace WenceyWang {
 			ClientPackage::Process();
 			User^sender = GetSendUser(this);
 			User^receiver = GetUser(this->TargetUser);
-			if (!receiver->Blockeds->Contains(*sender->Guid))
+			if (!receiver->Blockeds->Contains(sender))
 			{
 				lock l(receiver);
 				receiver->Messages->Enqueue(gcnew MessagePackage(sender->Name, this->Content));

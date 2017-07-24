@@ -83,9 +83,9 @@ namespace WenceyWang {
 
 			static SHA512Managed^ Hash = gcnew SHA512Managed();
 
-			List<System::Guid>^ Friends;
+			List<User^>^ Friends;
 
-			List<System::Guid>^ Blockeds ;
+			List<User^>^ Blockeds ;
 
 			DateTime^LastSeen;
 
@@ -93,8 +93,8 @@ namespace WenceyWang {
 
 			User(System::Guid guid, String^ name, String^ password)
 			{
-				Friends = gcnew List<System::Guid>();
-				Blockeds = gcnew List<System::Guid>();
+				Friends = gcnew List<User^>();
+				Blockeds = gcnew List<User^>();
 				Messages = gcnew Queue<ServerPackage^>();
 
 				this->Guid = guid;
@@ -110,8 +110,8 @@ namespace WenceyWang {
 		
 			User(XElement^ element)
 			{
-				Friends = gcnew List<System::Guid>();
-				Blockeds = gcnew List<System::Guid>();
+				Friends = gcnew List<User^>();
+				Blockeds = gcnew List<User^>();
 				Messages = gcnew Queue<ServerPackage^>();
 
 
