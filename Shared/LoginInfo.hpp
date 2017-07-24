@@ -35,7 +35,7 @@ namespace WenceyWang {
 				Password = password;
 			}
 
-			virtual XElement^ ToXElement() override
+			XElement^ ToXElement()
 			{
 				Type^ type = this->GetType();
 
