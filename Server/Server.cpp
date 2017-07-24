@@ -442,6 +442,13 @@ namespace WenceyWang {
 
 int main(array<System::String ^> ^args)
 {
+	Console::WriteLine("DGZ Chat Copyright(C) 2017 Wencey Wang");
+	Console::WriteLine("This program comes with ABSOLUTELY NO WARRANTY;");
+	Console::WriteLine("This is free software, and you are welcome to redistribute it under certain conditions;");
+	Console::WriteLine("Visit https://www.gnu.org/licenses/agpl-3.0.html for details.");
+
+	Console::WriteLine();
+
 	WenceyWang::LiveChatDemo::Server::App^ App = gcnew WenceyWang::LiveChatDemo::Server::App();
 
 	App->Start();

@@ -184,6 +184,9 @@ namespace WenceyWang {
 
 					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>(Command::ChooseCommandType));
 
+					
+					Console::WriteLine("Type \"Help\" To get ALL aviliable commands");
+					Console::WriteLine("Type \"Help COMMAND...\" to get help of specific commands");
 
 					while (true)
 					{
@@ -296,6 +299,12 @@ namespace WenceyWang {
 			public ref class GroupAddUser :Command
 			{
 			public:
+
+				virtual String^ GetHelp() override
+				{
+					return "GroupAddUser GROUPNAME... USERNAME...";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					GroupAddUserPackage^ package = gcnew GroupAddUserPackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -307,6 +316,11 @@ namespace WenceyWang {
 			public ref class GroupRemoveUser :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "GroupRemoveUser GROUPNAME... USERNAME...";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					GroupRemoveUserPackage^ package = gcnew GroupRemoveUserPackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -317,6 +331,11 @@ namespace WenceyWang {
 			public ref class SendGroupMessage :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "SendGroupMessage GROUPNAME... MESSAGE...";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					SendGroupMessagePackage^ package = gcnew SendGroupMessagePackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -327,6 +346,10 @@ namespace WenceyWang {
 			public ref class AddFriend :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "AddFriend USERNAME...";
+				}
 
 				void Excute(array<System::String ^> ^args) override
 				{
@@ -338,6 +361,10 @@ namespace WenceyWang {
 			public ref class RemoveFriend :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "RemoveFriend USERNAME...";
+				}
 
 				void Excute(array<System::String ^> ^args) override
 				{
@@ -349,6 +376,11 @@ namespace WenceyWang {
 			public ref class UnblockUser :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "UnblockUser USERNAME...";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					UnblockUserPackage^ package = gcnew UnblockUserPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -360,6 +392,11 @@ namespace WenceyWang {
 			public ref class GetFriends :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "GetFriends USERNAME...";
+				}
+
 				void Excute(array<String^>^ args)override
 				{
 					GetFriendsPackage^ package = gcnew GetFriendsPackage(App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -371,6 +408,11 @@ namespace WenceyWang {
 			public ref class SendMessage :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "SendMessage USERNAME... CONTENT...";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					SendMessagePackage^ package = gcnew SendMessagePackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -381,6 +423,11 @@ namespace WenceyWang {
 			public ref class GetGroupUsers :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "GetGroupUsers GROUPNAME...";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					GetGroupUsersPackage^ package = gcnew GetGroupUsersPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -391,6 +438,11 @@ namespace WenceyWang {
 			public ref class GetBlocked :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "GetBlock";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					GetBlockedPackage^ package = gcnew GetBlockedPackage(App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -401,6 +453,11 @@ namespace WenceyWang {
 			public ref class GetUsers :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "GetUsers";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					GetUsersPackage^ package = gcnew GetUsersPackage(App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -411,6 +468,11 @@ namespace WenceyWang {
 			public ref class SetCheckMessageInterval :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "SetCheckMessageInterval CheckMessageInterval...";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					App::Current->CheckMessageInterval = Convert::ToInt32(args[1]);
@@ -420,6 +482,11 @@ namespace WenceyWang {
 			public ref class BlockUser :Command
 			{
 			public:
+				virtual String^ GetHelp() override
+				{
+					return "BlockUser USERNAME...";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					BlockUserPackage^ package = gcnew BlockUserPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -430,6 +497,13 @@ namespace WenceyWang {
 			public ref class Help :Command
 			{
 			public:
+
+				virtual String^ GetHelp() override
+				{
+					return "Help" + System::Environment::NewLine + "Help COMMAND...";
+				}
+
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>(Command::ChooseCommandType));
@@ -496,6 +570,14 @@ namespace WenceyWang {
 
 int main(array<System::String ^> ^args)
 {
+
+	Console::WriteLine("DGZ Chat Copyright(C) 2017 Wencey Wang");
+	Console::WriteLine("This program comes with ABSOLUTELY NO WARRANTY;");
+	Console::WriteLine("This is free software, and you are welcome to redistribute it under certain conditions;");
+	Console::WriteLine("Visit https://www.gnu.org/licenses/agpl-3.0.html for details.");
+
+	Console::WriteLine();
+
 	WenceyWang::LiveChatDemo::Client::App^ App = gcnew WenceyWang::LiveChatDemo::Client::App();
 
 	App->Start();
