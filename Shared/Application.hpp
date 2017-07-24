@@ -22,7 +22,7 @@ namespace WenceyWang {
 		{
 		public:
 
-			Object^ ConsoleLocker = gcnew Object();
+				ConsoleLocker = gcnew Object();
 
 			void LogInfo(String^ formart, ... array<System::Object^>^ arg)
 			{

@@ -54,7 +54,7 @@ namespace WenceyWang {
 				this->IsOnline =Convert::ToBoolean( element->Attribute("IsOnline")->Value);
 			}
 
-			String ^ ToString () override
+			virtual String ^ ToString () override
 			{
 				if (IsOnline)
 				{
@@ -83,16 +83,20 @@ namespace WenceyWang {
 
 			static SHA512Managed^ Hash = gcnew SHA512Managed();
 
-			List<User^>^ Friends = gcnew List<User^>();
+			List<System::Guid>^ Friends;
 
-			List<User^>^ Blockeds = gcnew List<User^>();
+			List<System::Guid>^ Blockeds ;
 
 			DateTime^LastSeen;
 
-			Queue<ServerPackage^>^  Messages = gcnew Queue<ServerPackage^>();//Todo:序列化這個
+			Queue<ServerPackage^>^  Messages;//Todo:序列化這個
 
 			User(System::Guid guid, String^ name, String^ password)
 			{
+				Friends = gcnew List<System::Guid>();
+				Blockeds = gcnew List<System::Guid>();
+				Messages = gcnew Queue<ServerPackage^>();
+
 				this->Guid = guid;
 				this->Name = name;
 				this->PasswordHashed = Convert::ToBase64String(Hash->ComputeHash(InterOp::ToByte(password)));
@@ -106,6 +110,11 @@ namespace WenceyWang {
 		
 			User(XElement^ element)
 			{
+				Friends = gcnew List<System::Guid>();
+				Blockeds = gcnew List<System::Guid>();
+				Messages = gcnew Queue<ServerPackage^>();
+
+
 				this->Guid = System::Guid::Parse(element->Attribute("Guid")->Value);
 				this->Name = element->Attribute("Name")->Value;
 				this->PasswordHashed = (element->Attribute("Password")->Value);
@@ -178,7 +187,7 @@ namespace WenceyWang {
 		{
 		public:
 
-			List<User^>^ Users=gcnew List<User^>;
+			List<User^>^ Users;
 
 			User^ Owner;		
 
@@ -186,6 +195,8 @@ namespace WenceyWang {
 
 			Group(String ^ name, User^ owner)
 			{
+				Users=gcnew List<User^>();
+
 				Name = name;
 				Owner = owner;
 				Users->Add(Owner);

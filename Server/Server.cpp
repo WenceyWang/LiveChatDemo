@@ -22,9 +22,17 @@ namespace WenceyWang {
 				Thread^ SendThread;
 				Thread^ ProcessThread;
 
-				int Port = 3344;
+				static int Port = 3344;
 
-				UdpClient^ Sender = gcnew UdpClient();
+					Sender = gcnew UdpClient();
+					Users = gcnew List<User^>();
+					Groups = gcnew List<Group^>();
+					InMessage = gcnew Queue<ClientPackage^>();
+					OutMessage = gcnew Queue<ServerPackage^>();
+				}
+
+
+				UdpClient^ Sender;
 
 				List<User^>^ Users = gcnew List<User^>();
 

@@ -46,7 +46,7 @@ namespace WenceyWang {
 				Password = password;
 			}
 
-			XElement^ ToXElement()override
+			virtual XElement^ ToXElement()override
 			{
 				XElement^ element = ClientPackage::ToXElement();
 
@@ -56,7 +56,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			void Process() override;
+			virtual void Process() override;
 
 		};
 
