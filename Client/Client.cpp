@@ -376,7 +376,17 @@ namespace WenceyWang {
 
 			};
 
-			public ref class Help:Command
+			public ref class BlockUser :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					BlockUserPackage^ package = gcnew BlockUserPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+			};
+
+			public ref class Help :Command
 			{
 			public:
 				void Excute(array<System::String ^> ^args) override
@@ -398,45 +408,21 @@ namespace WenceyWang {
 
 		}
 
-		void WenceyWang::LiveChatDemo::ClientPackage::Process()
-		{
-		}
-
-		void WenceyWang::LiveChatDemo::SendMessagePackage::Process()
-		{
-		}
-
-		void WenceyWang::LiveChatDemo::GetMessagesPackage::Process()
-		{
-		}
-
-		void WenceyWang::LiveChatDemo::GetUsersPackage::Process()
-		{
-		}
-
-		void WenceyWang::LiveChatDemo::GetFriendsPackage::Process()
-		{
-		}
-
-		void WenceyWang::LiveChatDemo::AddFriendPackage::Process()
-		{
-		}
-
-		void WenceyWang::LiveChatDemo::RegisAccountPackage::Process()
-		{}
-
-		void WenceyWang::LiveChatDemo::BlockUserPackage::Process()
-		{
-		}
-
+		void WenceyWang::LiveChatDemo::ClientPackage::Process(){}
+		void WenceyWang::LiveChatDemo::SendMessagePackage::Process(){}
+		void WenceyWang::LiveChatDemo::GetMessagesPackage::Process(){}
+		void WenceyWang::LiveChatDemo::GetUsersPackage::Process() {}
+		void WenceyWang::LiveChatDemo::GetFriendsPackage::Process() {}
+		void WenceyWang::LiveChatDemo::AddFriendPackage::Process() {}
+		void WenceyWang::LiveChatDemo::RegisAccountPackage::Process() {}
+		void WenceyWang::LiveChatDemo::BlockUserPackage::Process() {}
 		void WenceyWang::LiveChatDemo::SendGroupMessagePackage::Process() {}
-
 		void WenceyWang::LiveChatDemo::CreateGroupPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GroupAddUserPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GroupRemoveUserPackage::Process() {}
-		void WenceyWang::LiveChatDemo::GetGroupUsersPackage::Process()
-		{
-		}
+		void WenceyWang::LiveChatDemo::GetGroupUsersPackage::Process() {}
+		void WenceyWang::LiveChatDemo::GetBlockedPackage::Process() {}
+
 	}
 }
 

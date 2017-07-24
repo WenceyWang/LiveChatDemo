@@ -312,8 +312,14 @@ namespace WenceyWang {
 			User^user = GetSender(this);
 			ReturnFriendsPackage^ package = gcnew ReturnFriendsPackage(Enumerable::ToList(Enumerable::Select(user->Friends, gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
 			(Server::App::Current)->SendPackage(package);
+		}
 
-
+		void WenceyWang::LiveChatDemo::GetBlockedPackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSender(this);
+			ReturnBlockedPackage^ package = gcnew ReturnBlockedPackage(Enumerable::ToList(Enumerable::Select(user->Blockeds, gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
+			(Server::App::Current)->SendPackage(package);
 		}
 
 		void WenceyWang::LiveChatDemo::AddFriendPackage::Process()

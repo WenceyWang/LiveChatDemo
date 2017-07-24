@@ -212,6 +212,24 @@ namespace WenceyWang {
 
 		};
 
+		public ref class GetBlockedPackage :ClientPackage
+		{
+		public:
+			GetBlockedPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			{
+
+			}
+
+			GetBlockedPackage(IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+
+			}
+
+			virtual	void Process() override;
+
+		};
+
+
 		public ref class GetGroupUsersPackage:ClientPackage
 		{
 		public:
@@ -287,6 +305,53 @@ namespace WenceyWang {
 				return element;
 			}
 
+		};
+
+		public ref class ReturnBlockedPackage :ServerPackage
+		{
+		public:
+
+			List<UserInfo^>^ Users;
+
+
+			ReturnBlockedPackage(List<UserInfo^>^ users, IPAddress ^ target) :ServerPackage(target)
+			{
+				Users = users;
+			}
+
+			ReturnBlockedPackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
+			{
+				Users = gcnew List<UserInfo^>();
+
+				for each (XElement^ user in element->Elements())
+				{
+					Users->Add(gcnew UserInfo(user));
+				}
+			}
+
+			virtual	String^ ToString()override
+			{
+				StringBuilder^ builder = gcnew StringBuilder();
+
+				for each (UserInfo^ user in Users)
+				{
+					builder->AppendLine(user->ToString());
+				}
+
+				return builder->ToString();
+			}
+
+			virtual	XElement^ ToXElement() override
+			{
+				XElement^ element = ServerPackage::ToXElement();
+
+				for each (UserInfo^ user in Users)
+				{
+					element->Add(user->ToXElement());
+
+				}
+				return element;
+			}
 		};
 
 		public ref class ReturnFriendsPackage :ServerPackage
