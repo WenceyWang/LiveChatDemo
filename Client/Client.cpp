@@ -26,7 +26,13 @@ namespace WenceyWang {
 			public ref class Command abstract
 			{
 			public:
-				void virtual Excute(array<System::String ^> ^args) abstract;
+
+				virtual	void Excute(array<System::String ^> ^args) abstract;
+
+				virtual	String^ GetHelp()
+				{
+					return "No help aviliable.";
+				}
 
 				static bool ChooseCommandType(Type^ type)
 				{
@@ -274,6 +280,12 @@ namespace WenceyWang {
 			public ref class CreateGroup :Command
 			{
 			public:
+
+				virtual String^ GetHelp() override
+				{
+					return "CreateGroup GROUPNAME...";
+				}
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					CreateGroupPackage^ package = gcnew CreateGroupPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -381,7 +393,7 @@ namespace WenceyWang {
 			public:
 				void Excute(array<System::String ^> ^args) override
 				{
-					GetBlockedPackage^ package = gcnew GetBlockedPackage( App::Current->Server->Address, App::Current->UserLoginInfo);
+					GetBlockedPackage^ package = gcnew GetBlockedPackage(App::Current->Server->Address, App::Current->UserLoginInfo);
 					App::Current->SendPackage(package);
 				}
 			};
@@ -422,12 +434,40 @@ namespace WenceyWang {
 				{
 					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>(Command::ChooseCommandType));
 
-					lock l(Client::App::Current->ConsoleLocker);
-					for each (Type^ type in types)
+					switch (args->Length)
 					{
-						Console::WriteLine(type->Name);
+					case 1:
+					{
+						lock l(Client::App::Current->ConsoleLocker);
+						for each (Type^ type in types)
+						{
+							Console::WriteLine(type->Name);
+						}
+						l.release();
+
+						break;
 					}
-					l.release();
+					case 2:
+					{
+						TypeNamePredicate ^ namePred = gcnew TypeNamePredicate(args[1]);
+
+						Type ^type = Array::Find(types, gcnew Predicate<Type^>(namePred, &TypeNamePredicate::ChooseName));
+
+						if (type == nullptr)
+						{
+							throw gcnew NotSupportedException(String::Format("{0} command not found", args[1]));
+						}
+
+						Command^ command = (Command^)Activator::CreateInstance(type);
+
+						Console::WriteLine(command->GetHelp());
+
+					}
+					default:
+					{
+						break;
+					}
+					}
 				}
 			};
 
@@ -448,8 +488,8 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::GroupRemoveUserPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GetGroupUsersPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GetBlockedPackage::Process() {}
-		void WenceyWang::LiveChatDemo::UnblockUserPackage::Process(){}
-		void WenceyWang::LiveChatDemo::RemoveFriendPackage::Process(){}
+		void WenceyWang::LiveChatDemo::UnblockUserPackage::Process() {}
+		void WenceyWang::LiveChatDemo::RemoveFriendPackage::Process() {}
 	}
 }
 
