@@ -268,9 +268,9 @@ namespace WenceyWang {
 			{
 				Users = gcnew List<UserInfo^>();
 
-				for each (XElement^ element in element->Elements())
+				for each (XElement^ user in element->Elements())
 				{
-					Users->Add(gcnew UserInfo(element));
+					Users->Add(gcnew UserInfo(user));
 				}
 
 			}
@@ -298,16 +298,16 @@ namespace WenceyWang {
 
 			ReturnFriendsPackage(List<UserInfo^>^ users, IPAddress ^ target) :ServerPackage(target)
 			{
-
+				Users = users;
 			}
 
 			ReturnFriendsPackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
 			{
 				Users = gcnew List<UserInfo^>();
 
-				for each (XElement^ element in element->Elements())
+				for each (XElement^ user in element->Elements())
 				{
-					Users->Add(gcnew UserInfo(element));
+					Users->Add(gcnew UserInfo(user));
 				}
 
 			}
@@ -346,16 +346,16 @@ namespace WenceyWang {
 
 			ReturnGroupUsersPackage(List<UserInfo^>^ users, IPAddress ^ target) :ServerPackage(target)
 			{
-
+				Users = users;
 			}
 
 			ReturnGroupUsersPackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
 			{
 				Users = gcnew List<UserInfo^>();
 
-				for each (XElement^ element in element->Elements())
+				for each (XElement^ user in element->Elements())
 				{
-					Users->Add(gcnew UserInfo(element));
+					Users->Add(gcnew UserInfo(user));
 				}
 
 			}

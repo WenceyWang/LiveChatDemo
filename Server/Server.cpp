@@ -391,8 +391,11 @@ namespace WenceyWang {
 			ClientPackage::Process();
 			User^sender = GetSendUser(this);
 			Group^ group = GetGroup(this->TargetGroup);
-			ReturnGroupUsersPackage^ package = gcnew ReturnGroupUsersPackage(Enumerable::ToList(Enumerable::Select(group->Users, gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
-			(Server::App::Current)->SendPackage(package);
+			if (group->Users->Contains(sender))
+			{
+				ReturnGroupUsersPackage^ package = gcnew ReturnGroupUsersPackage(Enumerable::ToList(Enumerable::Select(group->Users, gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
+				(Server::App::Current)->SendPackage(package);
+			}
 		}
 
 	}
