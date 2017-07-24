@@ -10,8 +10,22 @@ namespace WenceyWang {
 	namespace LiveChatDemo
 	{
 
-
 		namespace Server {
+
+			public ref class UserLoginFailedException :Exception
+			{
+			public:
+				String ^Name;
+				IPAddress^ Sender;
+
+				UserLoginFailedException(String^ name, IPAddress^ sender)
+				{
+					Name = name;
+					Sender = sender;
+				}
+
+			};
+
 
 			public ref class App :Application
 			{
@@ -37,13 +51,13 @@ namespace WenceyWang {
 
 				UdpClient^ Sender;
 
-				List<User^>^ Users ;
+				List<User^>^ Users;
 
-				List<Group^>^ Groups ;
+				List<Group^>^ Groups;
 
 				Queue<ClientPackage^>^ InMessage;
 
-				Queue<ServerPackage^>^ OutMessage ;
+				Queue<ServerPackage^>^ OutMessage;
 
 				void SaveUserList()
 				{
@@ -75,10 +89,10 @@ namespace WenceyWang {
 					array<Type^>^ types = Array::FindAll(allTypes, gcnew Predicate<Type^>(ClientPackage::ChooseClientPackageType));
 
 					LogInfo("Start Lisining");
+
 					while (true)
 					{
 						try {
-
 
 							IPEndPoint^ endPoint = gcnew IPEndPoint(IPAddress::Any, Port);
 							array<unsigned char>^ value = Listener->Receive(endPoint);
@@ -105,6 +119,10 @@ namespace WenceyWang {
 							l.release();
 
 
+						}
+						catch (UserLoginFailedException ^e)
+						{
+							LogInfo("{0} Log {1} Failed", e->Sender, e->Name);
 						}
 						catch (Exception^ e)
 						{
@@ -172,7 +190,7 @@ namespace WenceyWang {
 				static App ^Current;
 
 
-			virtual	void Start() override
+				virtual	void Start() override
 				{
 
 					LogInfo("Server Starting");
@@ -208,18 +226,17 @@ namespace WenceyWang {
 			return user;
 		}
 
-
-		User^ GetSendUser(ClientPackage^ package)
-		{
-			return GetUser(package->CurrentLoginInfo->Name);
-		}
-
-
 		User^ GetUser(Guid^ guid)
 		{
 			UserGuidPredicate^ pred = gcnew UserGuidPredicate(guid);
 			User^user = Server::App::Current->Users->Find(gcnew Predicate<User^>(pred, &UserGuidPredicate::ChooseGuid));
 			return user;
+		}
+
+
+		User^ GetSender(ClientPackage^ package)
+		{
+			return GetUser(package->CurrentLoginInfo->Name);
 		}
 
 		Group^ GetGroup(String^ name)
@@ -243,21 +260,21 @@ namespace WenceyWang {
 
 		void WenceyWang::LiveChatDemo::ClientPackage::Process()
 		{
-			User^user = GetSendUser(this);
+			User^user = GetSender(this);
 
 			if (user->CheckLoginInfo(this->CurrentLoginInfo))
 			{
 			}
 			else
 			{
-				throw gcnew InvalidOperationException();
+				throw gcnew Server::UserLoginFailedException(user->Name, this->Source);
 			}
 		}
 
 		void WenceyWang::LiveChatDemo::SendMessagePackage::Process()
 		{
 			ClientPackage::Process();
-			User^sender = GetSendUser(this);
+			User^sender = GetSender(this);
 			User^receiver = GetUser(this->TargetUser);
 			if (!receiver->Blockeds->Contains(sender))
 			{
@@ -270,7 +287,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::GetMessagesPackage::Process()
 		{
 			ClientPackage::Process();
-			User^user = GetSendUser(this);
+			User^user = GetSender(this);
 			lock l(user);
 			user->LastSeen = DateTime::UtcNow;
 			while (user->Messages->Count > 0)
@@ -292,7 +309,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::GetFriendsPackage::Process()
 		{
 			ClientPackage::Process();
-			User^user = GetSendUser(this);
+			User^user = GetSender(this);
 			ReturnFriendsPackage^ package = gcnew ReturnFriendsPackage(Enumerable::ToList(Enumerable::Select(user->Friends, gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
 			(Server::App::Current)->SendPackage(package);
 
@@ -302,7 +319,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::AddFriendPackage::Process()
 		{
 			ClientPackage::Process();
-			User^user = GetSendUser(this);
+			User^user = GetSender(this);
 			User^Friend = GetUser(this->TargetUser);
 			user->Friends->Add(Friend);
 		}
@@ -314,10 +331,10 @@ namespace WenceyWang {
 			Server::App::Current->LogInfo("User {0} regised", this->Name);
 		}
 
-		void WenceyWang::LiveChatDemo::BlockPeoplePackage::Process()
+		void WenceyWang::LiveChatDemo::BlockUserPackage::Process()
 		{
 			ClientPackage::Process();
-			User^user = GetSendUser(this);
+			User^user = GetSender(this);
 			User^blocked = GetUser(this->TargetUser);
 			user->Blockeds->Add(blocked);
 		}
@@ -325,7 +342,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::GroupRemoveUserPackage::Process()
 		{
 			ClientPackage::Process();
-			User^user = GetSendUser(this);
+			User^user = GetSender(this);
 			Group^ group = GetGroup(this->TargetGroup);
 			User^ toRemove = GetUser(this->TargetUser);
 			if (group->Owner == user)
@@ -333,12 +350,11 @@ namespace WenceyWang {
 				lock l(group);
 
 				group->Users->Remove(toRemove);
-				if (group->Users->Contains(group->Owner))
+				if (!group->Users->Contains(group->Owner))
 				{
 					Server::App::Current->Groups->Remove(group);
 				}
 				l.release();
-
 			}
 
 
@@ -347,7 +363,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::GroupAddUserPackage::Process()
 		{
 			ClientPackage::Process();
-			User^user = GetSendUser(this);
+			User^user = GetSender(this);
 			Group^ group = GetGroup(this->TargetGroup);
 			User^ toAdd = GetUser(this->TargetUser);
 			if (group->Owner == user && !toAdd->Blockeds->Contains(user))
@@ -362,7 +378,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::CreateGroupPackage::Process()
 		{
 			ClientPackage::Process();
-			User^user = GetSendUser(this);
+			User^user = GetSender(this);
 			Group^ newGroup = gcnew Group(this->Name, user);
 
 			Server::App::Current->Groups->Add(newGroup);
@@ -372,7 +388,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::SendGroupMessagePackage::Process()
 		{
 			ClientPackage::Process();
-			User^sender = GetSendUser(this);
+			User^sender = GetSender(this);
 			Group^ group = GetGroup(this->TargetGroup);
 			if (group->Users->Contains(sender))
 			{
@@ -386,10 +402,10 @@ namespace WenceyWang {
 			}
 		}
 
-		void WenceyWang::LiveChatDemo::GetGroupUserPackage::Process()
+		void WenceyWang::LiveChatDemo::GetGroupUsersPackage::Process()
 		{
 			ClientPackage::Process();
-			User^sender = GetSendUser(this);
+			User^sender = GetSender(this);
 			Group^ group = GetGroup(this->TargetGroup);
 			if (group->Users->Contains(sender))
 			{

@@ -279,7 +279,6 @@ namespace WenceyWang {
 					CreateGroupPackage^ package = gcnew CreateGroupPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
 					App::Current->SendPackage(package);
 				}
-
 			};
 
 
@@ -302,7 +301,6 @@ namespace WenceyWang {
 					GroupRemoveUserPackage^ package = gcnew GroupRemoveUserPackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
 					App::Current->SendPackage(package);
 				}
-
 			};
 
 			public ref class SendGroupMessage :Command
@@ -352,7 +350,7 @@ namespace WenceyWang {
 			public:
 				void Excute(array<System::String ^> ^args) override
 				{
-					GetGroupUserPackage^ package = gcnew GetGroupUserPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
+					GetGroupUsersPackage^ package = gcnew GetGroupUsersPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
 					App::Current->SendPackage(package);
 				}
 			};
@@ -427,7 +425,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::RegisAccountPackage::Process()
 		{}
 
-		void WenceyWang::LiveChatDemo::BlockPeoplePackage::Process()
+		void WenceyWang::LiveChatDemo::BlockUserPackage::Process()
 		{
 		}
 
@@ -436,7 +434,7 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::CreateGroupPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GroupAddUserPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GroupRemoveUserPackage::Process() {}
-		void WenceyWang::LiveChatDemo::GetGroupUserPackage::Process()
+		void WenceyWang::LiveChatDemo::GetGroupUsersPackage::Process()
 		{
 		}
 	}

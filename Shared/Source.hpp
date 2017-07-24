@@ -212,18 +212,18 @@ namespace WenceyWang {
 
 		};
 
-		public ref class GetGroupUserPackage:ClientPackage
+		public ref class GetGroupUsersPackage:ClientPackage
 		{
 		public:
 			String^ TargetGroup;
 
 
-			GetGroupUserPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			GetGroupUsersPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
 				TargetGroup = element->Attribute("TargetGroup")->Value;
 			}
 
-			GetGroupUserPackage(String^ targetGroup, IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			GetGroupUsersPackage(String^ targetGroup, IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				TargetGroup = targetGroup;
 			}
@@ -386,13 +386,13 @@ namespace WenceyWang {
 		};
 
 
-		public ref class BlockPeoplePackage:ClientPackage
+		public ref class BlockUserPackage:ClientPackage
 		{
 		public:
 
 			String^ TargetUser;
 
-			BlockPeoplePackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			BlockUserPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
 			{
 
 				TargetUser = element->Attribute("TargetUser")->Value;
@@ -409,7 +409,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			BlockPeoplePackage(String^ targetUser, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			BlockUserPackage(String^ targetUser, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				TargetUser = targetUser;
 			}

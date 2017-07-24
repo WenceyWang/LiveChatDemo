@@ -40,7 +40,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			UserInfo(System::Guid^ guid, String^ name,bool isOnline)
+			UserInfo(System::Guid^ guid, String^ name, bool isOnline)
 			{
 				this->Guid = guid;
 				this->Name = name;
@@ -51,10 +51,10 @@ namespace WenceyWang {
 			{
 				this->Guid = System::Guid::Parse(element->Attribute("Guid")->Value);
 				this->Name = element->Attribute("Name")->Value;
-				this->IsOnline =Convert::ToBoolean( element->Attribute("IsOnline")->Value);
+				this->IsOnline = Convert::ToBoolean(element->Attribute("IsOnline")->Value);
 			}
 
-			virtual String ^ ToString () override
+			virtual String ^ ToString() override
 			{
 				if (IsOnline)
 				{
@@ -68,7 +68,7 @@ namespace WenceyWang {
 
 		};
 
-		
+
 
 		public ref class User sealed
 		{
@@ -85,7 +85,7 @@ namespace WenceyWang {
 
 			List<User^>^ Friends;
 
-			List<User^>^ Blockeds ;
+			List<User^>^ Blockeds;
 
 			DateTime^LastSeen;
 
@@ -104,10 +104,9 @@ namespace WenceyWang {
 
 			bool IsOnline()
 			{
-				return DateTime::operator-(DateTime::UtcNow , *LastSeen) < TimeSpan::FromSeconds(30);
+				return DateTime::operator-(DateTime::UtcNow, *LastSeen) < TimeSpan::FromSeconds(20);
 			}
 
-		
 			User(XElement^ element)
 			{
 				Friends = gcnew List<User^>();
@@ -137,7 +136,7 @@ namespace WenceyWang {
 
 				element->SetAttributeValue("Guid", this->Guid->ToString());
 				element->SetAttributeValue("Name", this->Name);
-				element->SetAttributeValue("Password",this->PasswordHashed);
+				element->SetAttributeValue("Password", this->PasswordHashed);
 
 				XElement^ friendsElement = gcnew XElement("Friends");
 
@@ -165,9 +164,9 @@ namespace WenceyWang {
 				return element;
 			}
 
-			static UserInfo^ ToUserInfo(User^ user,int index)
+			static UserInfo^ ToUserInfo(User^ user, int index)
 			{
-				UserInfo^ result = gcnew UserInfo(user->Guid, user->Name ,user->IsOnline());
+				UserInfo^ result = gcnew UserInfo(user->Guid, user->Name, user->IsOnline());
 				return result;
 			}
 
@@ -176,10 +175,10 @@ namespace WenceyWang {
 				String^ passwordHash = Convert::ToBase64String(Hash->ComputeHash(InterOp::ToByte(loginInfo->Password)));
 				return Name == loginInfo->Name
 					&&
-					this->PasswordHashed ==passwordHash;
+					this->PasswordHashed == passwordHash;
 			}
 
-			
+
 
 		};
 
@@ -189,13 +188,13 @@ namespace WenceyWang {
 
 			List<User^>^ Users;
 
-			User^ Owner;		
+			User^ Owner;
 
 			String^Name;
 
 			Group(String ^ name, User^ owner)
 			{
-				Users=gcnew List<User^>();
+				Users = gcnew List<User^>();
 
 				Name = name;
 				Owner = owner;
