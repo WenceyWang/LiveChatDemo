@@ -80,7 +80,7 @@ namespace WenceyWang {
 				Content = content;
 			}
 
-			XElement^ ToXElement()override
+			virtual XElement^ ToXElement()override
 			{
 				XElement^ element = ClientPackage::ToXElement();
 
@@ -90,7 +90,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			void Process() override;
+			virtual void Process() override;
 
 		};
 
@@ -114,7 +114,7 @@ namespace WenceyWang {
 				Content = content;
 			}
 
-			XElement^ ToXElement()override
+			virtual XElement^ ToXElement()override
 			{
 				XElement^ element = ClientPackage::ToXElement();
 
@@ -124,7 +124,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			void Process() override;
+		virtual	void Process() override;
 
 		};
 
@@ -143,7 +143,7 @@ namespace WenceyWang {
 
 			}
 
-			void Process() override;
+		virtual	void Process() override;
 
 		};
 
@@ -165,7 +165,7 @@ namespace WenceyWang {
 				TargetUser = targetUser;
 			}
 
-			XElement^ ToXElement()override
+			virtual XElement^ ToXElement()override
 			{
 				XElement^ element = ClientPackage::ToXElement();
 
@@ -174,7 +174,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			void Process() override;
+		virtual	void Process() override;
 
 		};
 
@@ -191,7 +191,7 @@ namespace WenceyWang {
 
 			}
 
-			void Process() override;
+		virtual	void Process() override;
 
 		};
 
@@ -208,7 +208,7 @@ namespace WenceyWang {
 
 			}
 
-			void Process() override;
+		virtual	void Process() override;
 
 		};
 
@@ -228,7 +228,7 @@ namespace WenceyWang {
 				TargetGroup = targetGroup;
 			}
 
-			XElement^ ToXElement()override
+			virtual XElement^ ToXElement()override
 			{
 				XElement^ element = ClientPackage::ToXElement();
 
@@ -237,7 +237,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			void Process() override;
+		virtual	void Process() override;
 
 		};
 
@@ -252,7 +252,7 @@ namespace WenceyWang {
 				Users = users;
 			}
 
-			String^ ToString()override
+			virtual String^ ToString()override
 			{
 				StringBuilder^ builder = gcnew StringBuilder();
 
@@ -275,7 +275,7 @@ namespace WenceyWang {
 
 			}
 
-			XElement^ ToXElement() override
+			virtual XElement^ ToXElement() override
 			{
 				XElement^ element = ServerPackage::ToXElement();
 
@@ -312,7 +312,7 @@ namespace WenceyWang {
 
 			}
 
-			String^ ToString()override
+		virtual	String^ ToString()override
 			{
 				StringBuilder^ builder = gcnew StringBuilder();
 
@@ -324,7 +324,7 @@ namespace WenceyWang {
 				return builder->ToString();
 			}
 
-			XElement^ ToXElement() override
+		virtual	XElement^ ToXElement() override
 			{
 				XElement^ element = ServerPackage::ToXElement();
 
@@ -360,7 +360,7 @@ namespace WenceyWang {
 
 			}
 
-			String^ ToString()override
+			virtual String^ ToString()override
 			{
 				StringBuilder^ builder = gcnew StringBuilder();
 
@@ -372,7 +372,7 @@ namespace WenceyWang {
 				return builder->ToString();
 			}
 
-			XElement^ ToXElement() override
+			virtual XElement^ ToXElement() override
 			{
 				XElement^ element = ServerPackage::ToXElement();
 
@@ -400,7 +400,7 @@ namespace WenceyWang {
 			}
 
 
-			XElement^ ToXElement()override
+			virtual XElement^ ToXElement()override
 			{
 				XElement^ element = ClientPackage::ToXElement();
 
@@ -414,7 +414,7 @@ namespace WenceyWang {
 				TargetUser = targetUser;
 			}
 
-			void Process() override;
+			virtual void Process() override;
 
 		};
 
@@ -438,12 +438,12 @@ namespace WenceyWang {
 				Content = content;
 			}
 
-			String^ ToString()override
+			virtual String^ ToString()override
 			{
 				return String::Format("{0}	{1}:{2}",DateTime::UtcNow, SourceUser, Content);
 			}
 
-			XElement^ ToXElement()override
+		virtual	XElement^ ToXElement()override
 			{
 				XElement^ element = ServerPackage::ToXElement();
 				element->SetAttributeValue("SourceUser", SourceUser);
@@ -468,7 +468,7 @@ namespace WenceyWang {
 				Name = name;
 			}
 
-			XElement^ ToXElement()override
+			virtual XElement^ ToXElement()override
 			{
 				XElement^ element = ClientPackage::ToXElement();
 
@@ -477,7 +477,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			void Process() override;
+		virtual	void Process() override;
 
 
 		};
@@ -502,7 +502,7 @@ namespace WenceyWang {
 				TargetGroup = targetGroup;
 			}
 
-			XElement^ ToXElement()override
+			virtual XElement^ ToXElement()override
 			{
 				XElement^ element = ClientPackage::ToXElement();
 
@@ -512,7 +512,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			void Process() override;
+		virtual	void Process() override;
 
 		};
 
@@ -537,7 +537,7 @@ namespace WenceyWang {
 				TargetGroup = targetGroup;
 			}
 
-			XElement^ ToXElement()override
+			virtual XElement^ ToXElement()override
 			{
 				XElement^ element = ClientPackage::ToXElement();
 
@@ -547,7 +547,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-			void Process() override;
+		virtual	void Process() override;
 
 		};
 

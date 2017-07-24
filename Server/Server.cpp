@@ -24,6 +24,9 @@ namespace WenceyWang {
 
 				static int Port = 3344;
 
+				App()
+				{
+					Current = this;
 					Sender = gcnew UdpClient();
 					Users = gcnew List<User^>();
 					Groups = gcnew List<Group^>();
@@ -34,13 +37,13 @@ namespace WenceyWang {
 
 				UdpClient^ Sender;
 
-				List<User^>^ Users = gcnew List<User^>();
+				List<User^>^ Users ;
 
-				List<Group^>^ Groups = gcnew List<Group^>;
+				List<Group^>^ Groups ;
 
-				Queue<ClientPackage^>^ InMessage = gcnew Queue<ClientPackage^>();
+				Queue<ClientPackage^>^ InMessage;
 
-				Queue<ServerPackage^>^ OutMessage = gcnew Queue<ServerPackage^>();
+				Queue<ServerPackage^>^ OutMessage ;
 
 				void SaveUserList()
 				{
@@ -168,12 +171,8 @@ namespace WenceyWang {
 
 				static App ^Current;
 
-				App()
-				{
-					Current = this;
-				}
 
-				void Start() override
+			virtual	void Start() override
 				{
 
 					LogInfo("Server Starting");
@@ -260,7 +259,7 @@ namespace WenceyWang {
 			ClientPackage::Process();
 			User^sender = GetSendUser(this);
 			User^receiver = GetUser(this->TargetUser);
-			if (!receiver->Blockeds->Contains(sender))
+			if (!receiver->Blockeds->Contains(*sender->Guid))
 			{
 				lock l(receiver);
 				receiver->Messages->Enqueue(gcnew MessagePackage(sender->Name, this->Content));
@@ -395,9 +394,7 @@ namespace WenceyWang {
 			Group^ group = GetGroup(this->TargetGroup);
 			ReturnGroupUsersPackage^ package = gcnew ReturnGroupUsersPackage(Enumerable::ToList(Enumerable::Select(group->Users, gcnew Func<User^, int, UserInfo^>(User::ToUserInfo))), this->Source);
 			(Server::App::Current)->SendPackage(package);
-
 		}
-
 
 	}
 }
