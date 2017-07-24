@@ -10,7 +10,7 @@ using namespace System::Net;
 using namespace System::Xml::Linq;
 using namespace System::Linq;
 using namespace System::Text;
-using namespace  System::Security::Cryptography;
+using namespace System::Security::Cryptography;
 using namespace msclr;
 
 namespace WenceyWang {

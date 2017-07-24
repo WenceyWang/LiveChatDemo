@@ -31,7 +31,7 @@ namespace WenceyWang {
 
 				virtual	String^ GetHelp()
 				{
-					return "No help aviliable.";
+					return "NO help aviliable.";
 				}
 
 				static bool ChooseCommandType(Type^ type)
@@ -63,10 +63,7 @@ namespace WenceyWang {
 
 				static App^ Current;
 
-
 				Queue<ClientPackage^>^ OutMessage = gcnew Queue<ClientPackage^>();
-
-
 
 				App()
 				{
@@ -152,7 +149,6 @@ namespace WenceyWang {
 
 					}
 				}
-
 
 				static array<String^>^ SplitArguments(String^ commandLine)
 				{
