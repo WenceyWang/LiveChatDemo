@@ -182,12 +182,14 @@ namespace WenceyWang {
 				{
 					LogInfo("Starting Commanding");
 
+					lock l(ConsoleLocker);
+					Console::WriteLine("Type \"Help\" To get ALL aviliable commands");
+					Console::WriteLine("Type \"Help COMMAND...\" to get help of specific commands");
+					l.release();
+
 					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>(Command::ChooseCommandType));
 
 					
-					Console::WriteLine("Type \"Help\" To get ALL aviliable commands");
-					Console::WriteLine("Type \"Help COMMAND...\" to get help of specific commands");
-
 					while (true)
 					{
 						try

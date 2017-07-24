@@ -83,6 +83,7 @@ namespace WenceyWang {
 			void LogWarn(String^ formart, ... array<System::Object^>^ arg)
 			{
 				lock l(ConsoleLocker);
+
 				Console::BackgroundColor = ConsoleColor::DarkRed;				
 				Console::ForegroundColor = ConsoleColor::White;
 
