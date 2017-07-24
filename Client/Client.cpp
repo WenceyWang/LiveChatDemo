@@ -140,7 +140,7 @@ namespace WenceyWang {
 
 							ServerPackage^ package = (ServerPackage^)Activator::CreateInstance(type, address->Address, element);
 
-							Console::WriteLine(package->ToString());
+							Console::WriteLine("Server:	{0}",package->ToString());
 						}
 						catch (Exception^ e)
 						{
