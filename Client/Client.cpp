@@ -281,7 +281,6 @@ namespace WenceyWang {
 				}
 			};
 
-
 			public ref class GroupAddUser :Command
 			{
 			public:
@@ -355,6 +354,16 @@ namespace WenceyWang {
 				}
 			};
 
+			public ref class GetBlocked :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					GetBlockedPackage^ package = gcnew GetBlockedPackage( App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+			};
+
 			public ref class GetUsers :Command
 			{
 			public:
@@ -371,9 +380,7 @@ namespace WenceyWang {
 				void Excute(array<System::String ^> ^args) override
 				{
 					App::Current->CheckMessageInterval = Convert::ToInt32(args[1]);
-
 				}
-
 			};
 
 			public ref class BlockUser :Command
@@ -399,18 +406,15 @@ namespace WenceyWang {
 						Console::WriteLine(type->Name);
 					}
 					l.release();
-
 				}
-
-
 			};
 
 
 		}
 
-		void WenceyWang::LiveChatDemo::ClientPackage::Process(){}
-		void WenceyWang::LiveChatDemo::SendMessagePackage::Process(){}
-		void WenceyWang::LiveChatDemo::GetMessagesPackage::Process(){}
+		void WenceyWang::LiveChatDemo::ClientPackage::Process() {}
+		void WenceyWang::LiveChatDemo::SendMessagePackage::Process() {}
+		void WenceyWang::LiveChatDemo::GetMessagesPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GetUsersPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GetFriendsPackage::Process() {}
 		void WenceyWang::LiveChatDemo::AddFriendPackage::Process() {}
