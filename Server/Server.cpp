@@ -345,6 +345,22 @@ namespace WenceyWang {
 			user->Blockeds->Add(blocked);
 		}
 
+		void WenceyWang::LiveChatDemo::UnblockUserPackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSender(this);
+			User^blocked = GetUser(this->TargetUser);
+			user->Blockeds->Remove(blocked);
+		}
+
+		void WenceyWang::LiveChatDemo::RemoveFriendPackage::Process()
+		{
+			ClientPackage::Process();
+			User^user = GetSender(this);
+			User^Friend = GetUser(this->TargetUser);
+			user->Friends->Remove(Friend);
+		}
+
 		void WenceyWang::LiveChatDemo::GroupRemoveUserPackage::Process()
 		{
 			ClientPackage::Process();

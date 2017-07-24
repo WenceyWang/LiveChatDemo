@@ -124,7 +124,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-		virtual	void Process() override;
+			virtual	void Process() override;
 
 		};
 
@@ -143,7 +143,40 @@ namespace WenceyWang {
 
 			}
 
-		virtual	void Process() override;
+			virtual	void Process() override;
+
+		};
+
+
+
+		public ref class RemoveFriendPackage :ClientPackage
+		{
+		public:
+
+			String^ TargetUser;
+
+			RemoveFriendPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			{
+				TargetUser = element->Attribute("TargetUser")->Value;
+
+
+			}
+
+			RemoveFriendPackage(String^ targetUser, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+				TargetUser = targetUser;
+			}
+
+			virtual XElement^ ToXElement()override
+			{
+				XElement^ element = ClientPackage::ToXElement();
+
+				element->SetAttributeValue("TargetUser", TargetUser);
+
+				return element;
+			}
+
+			virtual	void Process() override;
 
 		};
 
@@ -174,7 +207,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-		virtual	void Process() override;
+			virtual	void Process() override;
 
 		};
 
@@ -191,7 +224,7 @@ namespace WenceyWang {
 
 			}
 
-		virtual	void Process() override;
+			virtual	void Process() override;
 
 		};
 
@@ -208,7 +241,7 @@ namespace WenceyWang {
 
 			}
 
-		virtual	void Process() override;
+			virtual	void Process() override;
 
 		};
 
@@ -230,7 +263,7 @@ namespace WenceyWang {
 		};
 
 
-		public ref class GetGroupUsersPackage:ClientPackage
+		public ref class GetGroupUsersPackage :ClientPackage
 		{
 		public:
 			String^ TargetGroup;
@@ -255,7 +288,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-		virtual	void Process() override;
+			virtual	void Process() override;
 
 		};
 
@@ -377,7 +410,7 @@ namespace WenceyWang {
 
 			}
 
-		virtual	String^ ToString()override
+			virtual	String^ ToString()override
 			{
 				StringBuilder^ builder = gcnew StringBuilder();
 
@@ -389,7 +422,7 @@ namespace WenceyWang {
 				return builder->ToString();
 			}
 
-		virtual	XElement^ ToXElement() override
+			virtual	XElement^ ToXElement() override
 			{
 				XElement^ element = ServerPackage::ToXElement();
 
@@ -451,7 +484,7 @@ namespace WenceyWang {
 		};
 
 
-		public ref class BlockUserPackage:ClientPackage
+		public ref class BlockUserPackage :ClientPackage
 		{
 		public:
 
@@ -483,6 +516,39 @@ namespace WenceyWang {
 
 		};
 
+		public ref class UnblockUserPackage :ClientPackage
+		{
+		public:
+
+			String^ TargetUser;
+
+			UnblockUserPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			{
+
+				TargetUser = element->Attribute("TargetUser")->Value;
+
+			}
+
+
+			virtual XElement^ ToXElement()override
+			{
+				XElement^ element = ClientPackage::ToXElement();
+
+				element->SetAttributeValue("TargetUser", TargetUser);
+
+				return element;
+			}
+
+			UnblockUserPackage(String^ targetUser, IPAddress^ target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+				TargetUser = targetUser;
+			}
+
+			virtual void Process() override;
+
+		};
+
+
 		public ref class MessagePackage :ServerPackage
 		{
 		public:
@@ -505,10 +571,10 @@ namespace WenceyWang {
 
 			virtual String^ ToString()override
 			{
-				return String::Format("{0}	{1}:{2}",DateTime::UtcNow, SourceUser, Content);
+				return String::Format("{0}	{1}:{2}", DateTime::UtcNow, SourceUser, Content);
 			}
 
-		virtual	XElement^ ToXElement()override
+			virtual	XElement^ ToXElement()override
 			{
 				XElement^ element = ServerPackage::ToXElement();
 				element->SetAttributeValue("SourceUser", SourceUser);
@@ -518,7 +584,7 @@ namespace WenceyWang {
 
 		};
 
-		public ref class CreateGroupPackage:ClientPackage
+		public ref class CreateGroupPackage :ClientPackage
 		{
 		public:
 			String^ Name;
@@ -528,7 +594,7 @@ namespace WenceyWang {
 				Name = element->Attribute("Name")->Value;
 			}
 
-			CreateGroupPackage(String^ name,  IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			CreateGroupPackage(String^ name, IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
 			{
 				Name = name;
 			}
@@ -542,7 +608,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-		virtual	void Process() override;
+			virtual	void Process() override;
 
 
 		};
@@ -577,7 +643,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-		virtual	void Process() override;
+			virtual	void Process() override;
 
 		};
 
@@ -612,7 +678,7 @@ namespace WenceyWang {
 				return element;
 			}
 
-		virtual	void Process() override;
+			virtual	void Process() override;
 
 		};
 

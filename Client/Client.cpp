@@ -323,6 +323,28 @@ namespace WenceyWang {
 				}
 			};
 
+			public ref class RemoveFriend :Command
+			{
+			public:
+
+				void Excute(array<System::String ^> ^args) override
+				{
+					RemoveFriendPackage^ package = gcnew RemoveFriendPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+			};
+
+			public ref class UnblockUser :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					UnblockUserPackage^ package = gcnew UnblockUserPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+			};
+
+
 			public ref class GetFriends :Command
 			{
 			public:
@@ -426,7 +448,8 @@ namespace WenceyWang {
 		void WenceyWang::LiveChatDemo::GroupRemoveUserPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GetGroupUsersPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GetBlockedPackage::Process() {}
-
+		void WenceyWang::LiveChatDemo::UnblockUserPackage::Process(){}
+		void WenceyWang::LiveChatDemo::RemoveFriendPackage::Process(){}
 	}
 }
 
