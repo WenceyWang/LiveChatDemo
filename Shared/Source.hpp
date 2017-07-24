@@ -212,7 +212,34 @@ namespace WenceyWang {
 
 		};
 
+		public ref class GetGroupUserPackage:ClientPackage
+		{
+		public:
+			String^ TargetGroup;
 
+
+			GetGroupUserPackage(IPAddress^ source, XElement^ element) :ClientPackage(source, element)
+			{
+				TargetGroup = element->Attribute("TargetGroup")->Value;
+			}
+
+			GetGroupUserPackage(String^ targetGroup, IPAddress^target, LoginInfo^ loginInfo) :ClientPackage(target, loginInfo)
+			{
+				TargetGroup = targetGroup;
+			}
+
+			XElement^ ToXElement()override
+			{
+				XElement^ element = ClientPackage::ToXElement();
+
+				element->SetAttributeValue("TargetGroup", TargetGroup);
+
+				return element;
+			}
+
+			void Process() override;
+
+		};
 
 		public ref class ReturnUsersPackage :ServerPackage
 		{
@@ -268,7 +295,6 @@ namespace WenceyWang {
 
 			List<UserInfo^>^ Users;
 
-			String^ Content;
 
 			ReturnFriendsPackage(List<UserInfo^>^ users, IPAddress ^ target) :ServerPackage(target)
 			{
@@ -310,6 +336,55 @@ namespace WenceyWang {
 				return element;
 			}
 		};
+
+		public ref class ReturnGroupUsersPackage :ServerPackage
+		{
+		public:
+
+			List<UserInfo^>^ Users;
+
+
+			ReturnGroupUsersPackage(List<UserInfo^>^ users, IPAddress ^ target) :ServerPackage(target)
+			{
+
+			}
+
+			ReturnGroupUsersPackage(IPAddress^ source, XElement^ element) :ServerPackage(source, element)
+			{
+				Users = gcnew List<UserInfo^>();
+
+				for each (XElement^ element in element->Elements())
+				{
+					Users->Add(gcnew UserInfo(element));
+				}
+
+			}
+
+			String^ ToString()override
+			{
+				StringBuilder^ builder = gcnew StringBuilder();
+
+				for each (UserInfo^ user in Users)
+				{
+					builder->AppendLine(user->ToString());
+				}
+
+				return builder->ToString();
+			}
+
+			XElement^ ToXElement() override
+			{
+				XElement^ element = ServerPackage::ToXElement();
+
+				for each (UserInfo^ user in Users)
+				{
+					element->Add(user->ToXElement());
+
+				}
+				return element;
+			}
+		};
+
 
 		public ref class BlockPeoplePackage:ClientPackage
 		{

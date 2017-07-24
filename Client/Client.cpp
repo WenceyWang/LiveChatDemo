@@ -271,6 +271,49 @@ namespace WenceyWang {
 
 			};
 
+			public ref class CreateGroup :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					CreateGroupPackage^ package = gcnew CreateGroupPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+
+			};
+
+
+			public ref class GroupAddUser :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					GroupAddUserPackage^ package = gcnew GroupAddUserPackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+
+			};
+
+			public ref class GroupRemoveUser :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					GroupRemoveUserPackage^ package = gcnew GroupRemoveUserPackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+
+			};
+
+			public ref class SendGroupMessage :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					SendGroupMessagePackage^ package = gcnew SendGroupMessagePackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+			};
 
 			public ref class AddFriend :Command
 			{
@@ -299,6 +342,16 @@ namespace WenceyWang {
 				void Excute(array<System::String ^> ^args) override
 				{
 					SendMessagePackage^ package = gcnew SendMessagePackage(args[1], args[2], App::Current->Server->Address, App::Current->UserLoginInfo);
+					App::Current->SendPackage(package);
+				}
+			};
+
+			public ref class GetGroupUsers :Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					GetGroupUserPackage^ package = gcnew GetGroupUserPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
 					App::Current->SendPackage(package);
 				}
 			};
@@ -358,12 +411,14 @@ namespace WenceyWang {
 		{
 		}
 
-		void WenceyWang::LiveChatDemo::SendGroupMessagePackage::Process(){}
+		void WenceyWang::LiveChatDemo::SendGroupMessagePackage::Process() {}
 
 		void WenceyWang::LiveChatDemo::CreateGroupPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GroupAddUserPackage::Process() {}
 		void WenceyWang::LiveChatDemo::GroupRemoveUserPackage::Process() {}
-
+		void WenceyWang::LiveChatDemo::GetGroupUserPackage::Process()
+		{
+		}
 	}
 }
 
