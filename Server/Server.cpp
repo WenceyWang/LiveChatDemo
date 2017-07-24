@@ -80,7 +80,7 @@ namespace WenceyWang {
 						try {
 
 
-							IPEndPoint^ endPoint = gcnew IPEndPoint(IPAddress::Any, 3344);
+							IPEndPoint^ endPoint = gcnew IPEndPoint(IPAddress::Any, Port);
 							array<unsigned char>^ value = Listener->Receive(endPoint);
 							XElement^ element = InterOp::ToXElement(value);
 
@@ -264,7 +264,6 @@ namespace WenceyWang {
 				lock l(receiver);
 				receiver->Messages->Enqueue(gcnew MessagePackage(sender->Name, this->Content));
 				l.release();
-
 			}
 		}
 

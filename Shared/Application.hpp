@@ -54,6 +54,9 @@ namespace WenceyWang {
 
 			void LogDebug(String^ formart, ... array<System::Object^>^ arg)
 			{
+#if _DEBUG
+
+
 				lock l(ConsoleLocker);
 
 				Console::BackgroundColor = ConsoleColor::DarkBlue;
@@ -73,6 +76,8 @@ namespace WenceyWang {
 				Console::ResetColor();
 
 				l.release();
+
+#endif
 			}
 
 			void LogWarn(String^ formart, ... array<System::Object^>^ arg)
