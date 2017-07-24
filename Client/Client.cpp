@@ -206,9 +206,9 @@ namespace WenceyWang {
 								throw gcnew NotSupportedException(String::Format("{0} command not found", currentCommand[0]));
 							}
 
-							Command^ package = (Command^)Activator::CreateInstance(type);
+							Command^ command = (Command^)Activator::CreateInstance(type);
 
-							package->Excute(currentCommand);
+							command->Excute(currentCommand);
 
 
 						}
@@ -318,6 +318,7 @@ namespace WenceyWang {
 			public ref class AddFriend :Command
 			{
 			public:
+
 				void Excute(array<System::String ^> ^args) override
 				{
 					AddFriendPackage^ package = gcnew AddFriendPackage(args[1], App::Current->Server->Address, App::Current->UserLoginInfo);
@@ -374,6 +375,25 @@ namespace WenceyWang {
 					App::Current->CheckMessageInterval = Convert::ToInt32(args[1]);
 
 				}
+
+			};
+
+			public ref class Help:Command
+			{
+			public:
+				void Excute(array<System::String ^> ^args) override
+				{
+					array<Type^>^ types = Array::FindAll(this->GetType()->Assembly->GetTypes(), gcnew Predicate<Type^>(Command::ChooseCommandType));
+
+					lock l(Client::App::Current->ConsoleLocker);
+					for each (Type^ type in types)
+					{
+						Console::WriteLine(type->Name);
+					}
+					l.release();
+
+				}
+
 
 			};
 

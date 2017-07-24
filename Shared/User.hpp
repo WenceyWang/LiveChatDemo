@@ -83,9 +83,9 @@ namespace WenceyWang {
 
 			static SHA512Managed^ Hash = gcnew SHA512Managed();
 
-			List<System::Guid>^ Friends = gcnew List<System::Guid>();
+			List<User^>^ Friends = gcnew List<User^>();
 
-			List<System::Guid>^ Blockeds = gcnew List<System::Guid>();
+			List<User^>^ Blockeds = gcnew List<User^>();
 
 			DateTime^LastSeen;
 
@@ -103,18 +103,14 @@ namespace WenceyWang {
 				return DateTime::operator-(DateTime::UtcNow , *LastSeen) < TimeSpan::FromSeconds(30);
 			}
 
-			void AddFriend(System::Guid guid)
-			{
-				Friends->Add(guid);
-			}
-
+		
 			User(XElement^ element)
 			{
 				this->Guid = System::Guid::Parse(element->Attribute("Guid")->Value);
 				this->Name = element->Attribute("Name")->Value;
 				this->PasswordHashed = (element->Attribute("Password")->Value);
 
-				for each (XElement^ var in element->Element("Friends")->Elements())
+				/*for each (XElement^ var in element->Element("Friends")->Elements())
 				{
 					Friends->Add(System::Guid::Parse(var->Value));
 				}
@@ -122,7 +118,7 @@ namespace WenceyWang {
 				for each (XElement^ var in element->Element("Blockeds")->Elements())
 				{
 					Blockeds->Add(System::Guid::Parse(var->Value));
-				}
+				}*/
 
 			}
 
@@ -136,7 +132,7 @@ namespace WenceyWang {
 
 				XElement^ friendsElement = gcnew XElement("Friends");
 
-				for each (System::Guid _friend in Friends)
+				for each (User^ _friend in Friends)
 				{
 					XElement^ current = gcnew XElement("Friend");
 					current->Add(_friend);
@@ -147,7 +143,7 @@ namespace WenceyWang {
 
 				XElement^ blockedElement = gcnew XElement("Blockeds");
 
-				for each (System::Guid _blocked in Blockeds)
+				for each (User^ _blocked in Blockeds)
 				{
 					XElement^ current = gcnew XElement("Blocked");
 					current->Add(_blocked);
