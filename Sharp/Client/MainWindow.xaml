@@ -1,0 +1,45 @@
+﻿<Window x:Class="Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client"
+        mc:Ignorable="d"
+        Title="Client" Height="450" Width="800">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition/>
+		</Grid.RowDefinitions>
+		<StackPanel>
+			<Grid VerticalAlignment="Top" Margin="80,20,80,0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="40"/>
+					<ColumnDefinition/>
+					<ColumnDefinition Width="20"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock TextWrapping="Wrap" Text="Server EndPoint" VerticalAlignment="Center"/>
+				<TextBox x:Name="ServerTextBox" Height="23" TextWrapping="Wrap" Grid.Column="2"/>
+				<Button x:Name="ConnectButton" Content="Connect" Grid.Column="4" Width="60"/>
+			</Grid>
+			<Grid VerticalAlignment="Top" Margin="80,20">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="40"/>
+					<ColumnDefinition/>
+					<ColumnDefinition Width="20"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock TextWrapping="Wrap" Text="Message" VerticalAlignment="Center"/>
+				<TextBox x:Name="MessageBox" Height="23" TextWrapping="Wrap" Grid.Column="2"/>
+				<Button x:Name="SendButton" Content="Send" Grid.Column="4" VerticalAlignment="Center" Width="60"/>
+			</Grid>
+		</StackPanel>
+		<ListBox x:Name="MessageList" Margin="10" Grid.Row="1">
+			
+		</ListBox>
+
+	</Grid>
+</Window>
